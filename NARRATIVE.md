@@ -102,6 +102,8 @@ Stem ships with **opinionated default blueprints** (e.g., "Python microservice w
 | **GitHub MCP** | Connect to GitHub from agents |
 | **WorkIQ MCP** | Additional MCP integration |
 | **GitHub API (PyGithub / httpx)** | Direct GitHub API access when MCP is not needed |
+| **Black & mypy** | Code formatting and type checking |
+| **pytest** | Testing framework |
 
 ### Web UI / API
 
