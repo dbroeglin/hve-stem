@@ -5,11 +5,14 @@
 ### DevEx
 
 1. Codespaces
+2. Use Architecture Decision Records
+3. Spec Driven?
 
 ### Architecture
 
-1. Use Architecture Decision Records
-2. Spec Driven?
+1. Based on GitHub Copilot CLI (SDK) -> .github/ agent content
+2. Use Markdown files for memory/storage
+3. CLI with autoserver capability for the UX
 
 ### Python CLI
 
