@@ -12,8 +12,8 @@ Teams adopting agentic development (AI-assisted code review, automated issue tri
 
 Stem is the answer to: *"How mature is our agentic SDLC, what should we improve next, and how do we enforce our standards?"*
 
-| Concern | What Stem provides |
-|---|---|
+| Concern                    | What Stem provides                                                                                                               |
+|----------------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | **Bootstrapping** | Scaffold new repos or onboard existing ones with opinionated-but-customizable SDLC blueprints (agentic workflows, CI/CD, policies) |
 | **Governance** | Define and enforce policies, guardrails, and instructions that constrain what agents can do across repos |
 | **Assessment** | Evaluate SDLC maturity, code/repo health, and drift from desired blueprints — per repo or across an org |
@@ -24,16 +24,16 @@ Stem is the answer to: *"How mature is our agentic SDLC, what should we improve 
 
 **Team leads and DevOps engineers** who are responsible for setting up and governing agentic workflows for their team or organization.
 
-### Scope
+### Operating model
 
 Stem operates at the **organization / multi-repo level**. It manages a portfolio of repositories, each with their own SDLC configuration, while enforcing org-wide policies and tracking maturity across the portfolio.
 
-### Active vs. Passive Governance
+Stem follows a **passive assessment + active recommendation** model:
 
-Stem operates primarily on a **passive assessment and active recommendation** model:
-1. **Bootstrapping:** Stem can generate an initial SDLC configuration for a new repository.
-2. **Assessment:** For existing repositories, Stem does *not* automatically overwrite configurations. It assesses the current state against the desired blueprint and records these findings in the Stem instance repository.
-3. **Remediation:** Stem can actively open Issues on the target (Layer 2) repositories based on its assessments. These issues will contain detailed descriptions of the drift, instructions on how to solve it, and an implementation plan. (Future capability: Stem may automatically generate Pull Requests to remediate drift).
+1. **Bootstrapping (MVP):** Generate an initial SDLC configuration for a new repository.
+2. **Assessment (MVP):** For existing repositories, Stem does *not* automatically overwrite configurations. It assesses current state vs. blueprint and records findings in the Stem instance repository.
+3. **Remediation (MVP):** Open issues on target (Layer 2) repositories with drift details, implementation guidance, and a remediation plan.
+4. **Remediation (Future):** Optionally generate pull requests to remediate drift automatically.
 
 ---
 
@@ -63,7 +63,7 @@ Stem operates primarily on a **passive assessment and active recommendation** mo
 
 ## Stem State & Storage
 
-All Stem state lives in a **Git repository** — human-readable, version-controllable, diffable. **No binary files.** No secrets.
+All Stem state lives in a **Git repository** — human-readable, version-controllable, diffable. **No binary files.**
 
 ### File formats
 
@@ -78,7 +78,7 @@ All Stem state lives in a **Git repository** — human-readable, version-control
 
 | Category | Purpose | Examples |
 |---|---|---|
-| **Connection config** | How Stem accesses and interacts with Layer 2 repos/orgs | Org/repo targets, API endpoints (no secrets — see Authentication below) |
+| **Connection config** | How Stem accesses and interacts with Layer 2 repos/orgs | Org/repo targets, API endpoints (authentication is external; see Authentication below) |
 | **Policies & instructions** | The rules and guardrails Stem enforces on Layer 2 | Approval policies, agent permissions, required workflows, blueprint definitions |
 | **Reports & audit trail** | Historical assessment results and change logs | Maturity scores over time, drift reports, remediation history |
 
@@ -97,7 +97,7 @@ Updates flow **downstream** from `hve-stem` to instance repos via pull requests 
 
 ## Authentication
 
-**No secrets are stored in Git.** Stem needs access to Layer 2 (GitHub Enterprise/Organization) and optionally Layer 3 (runtime environments), but credentials must stay outside the repository.
+**No secrets are stored in Git.** Stem needs access to Layer 2 (GitHub Enterprise/Organization) and optionally Layer 3 (runtime environments), but credentials stay outside the repository and are resolved at runtime.
 
 Authentication is resolved at runtime through one of the following mechanisms (in priority order):
 
@@ -112,9 +112,9 @@ The Stem config files (e.g., `targets.yaml`) reference *what* to connect to (org
 
 ---
 
-## Interfaces
+## Interfaces & Commands
 
-Stem exposes **three interfaces** that share the same core capabilities:
+Stem exposes **three interfaces** with shared core capabilities:
 
 | Interface | Surface | How it's started |
 |---|---|---|
@@ -124,7 +124,7 @@ Stem exposes **three interfaces** that share the same core capabilities:
 
 **Parity principle:** All three interfaces expose the same capabilities. A user should be able to `init`, `assess`, or any other Stem operation from the CLI, from a coding agent via MCP, or from the Web UI. If a capability is CLI-only, there must be a documented reason (e.g., interactive terminal prompts that have no MCP/Web equivalent). The CLI is the reference implementation — MCP and Web UI are built on top of the same core logic.
 
-### Commands
+Supported commands (invoked via CLI and available through parity across MCP/Web where applicable):
 
 | Command | Purpose |
 |---|---|
@@ -255,7 +255,7 @@ Portfolio dashboard (heatmap of repos × dimensions)
 5. **Trend data** — scores over time stored in `reports/` for historical comparison
 
 **Automation & State Lifecycle:**
-When `stem assess` runs, it automatically commits the resulting Markdown and CSV reports back to the Stem instance Git repository with a clear, structured commit message (e.g., `chore(assess): update assessment for repo-x [2026-02-27]`). This ensures a traceable history of SDLC maturity. While the primary MVP use case is running the CLI locally, it is designed to be easily executed on a schedule via GitHub Actions.
+When `stem assess` runs, it **automatically commits** the resulting Markdown and CSV reports back to the Stem instance Git repository with a clear, structured commit message (e.g., `chore(assess): update assessment for repo-x [2026-02-27]`). This default behavior ensures a traceable history of SDLC maturity and can be made configurable per blueprint or instance policy as the product evolves. The primary MVP use case is local CLI execution, but it is designed to run on a schedule via GitHub Actions.
 
 ---
 
@@ -270,7 +270,10 @@ Stem ships with **opinionated default blueprints** (e.g., "Python microservice w
 - Expected repo structure conventions
 
 **Blueprint Syntax & Extensibility:**
-Blueprints are written in **plain Markdown with YAML frontmatter**. They are designed to be read and interpreted by both humans and coding agents. For the MVP, there is no complex templating engine (like Jinja2) or custom Python plugin system. Customization is achieved by editing the plain English instructions in the Markdown body or adjusting structured settings in the frontmatter. They serve as both documentation and a machine-readable source of truth for Stem's assessments and enforcement.
+Blueprints are written in **plain Markdown with YAML frontmatter** and are designed to be interpreted by both humans and coding agents.
+
+- **MVP:** No custom plugin system or complex templating engine. Customization is done by editing markdown instructions and frontmatter settings.
+- **Future:** More advanced templating and extension points may be added if needed, without changing the blueprint-as-document principle.
 
 ---
 
@@ -306,22 +309,6 @@ To simplify distribution, the Next.js frontend will be built as a static HTML ex
 - **Codespaces** — ready-to-code dev environment
 - **Architecture Decision Records (ADRs)** — document key design choices
 - **Spec-driven development** — TBD: define interfaces and contracts before implementation
-
----
-
-## Layer 2: Substrate (reference, not built here)
-
-Starting points and references for the agentic workflows Stem will manage:
-
-- [OctoCat Supply](https://github.com/msft-common-demos/octocat_supply-obscure-umbrella) — existing demo to reuse as a sample Layer 2 target
-- [Agentic Workflows (gh-aw)](https://github.com/github/gh-aw) — see [documentation](https://github.github.com/gh-aw/)
-
----
-
-## Layer 3: Runtime (reference, not built here)
-
-- **Azure** is the initial target runtime
-- Designed to be runtime-agnostic — any platform where Layer 2 can deploy applications
 
 ---
 
