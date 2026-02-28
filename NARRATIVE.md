@@ -14,11 +14,11 @@ Stem is the answer to: *"How mature is our agentic SDLC, what should we improve 
 
 | Concern                    | What Stem provides                                                                                                               |
 |----------------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| **Bootstrapping** | Scaffold new repos or onboard existing ones with opinionated-but-customizable SDLC blueprints (agentic workflows, CI/CD, policies) |
-| **Governance** | Define and enforce policies, guardrails, and instructions that constrain what agents can do across repos |
-| **Assessment** | Evaluate SDLC maturity, code/repo health, and drift from desired blueprints — per repo or across an org |
-| **Observability** | Surface how the agentic SDLC is performing (quality signals, pipeline health, policy compliance) |
-| **Continuous Improvement** | Learn from assessment outcomes and iteratively refine agent configurations, prompts, and workflows |
+| **Bootstrapping**          | Scaffold new repos or onboard existing ones with opinionated-but-customizable SDLC blueprints (agentic workflows, CI/CD, policies) |
+| **Governance**             | Define and enforce policies, guardrails, and instructions that constrain what agents can do across repos                         |
+| **Assessment**             | Evaluate SDLC maturity, code/repo health, and drift from desired blueprints — per repo or across an org                          |
+| **Observability**          | Surface how the agentic SDLC is performing (quality signals, pipeline health, policy compliance)                                 |
+| **Continuous Improvement** | Learn from assessment outcomes and iteratively refine agent configurations, prompts, and workflows                               |
 
 ### Primary user
 
@@ -56,7 +56,7 @@ Stem follows a **passive assessment + active recommendation** model:
 ```
 
 - **Layer 1 (Stem):** What we are building. Manages and improves Layers 2 and 3 configurations.
-- **Layer 2 (Substrate):** The agentic workflows running on GitHub. Stem configures and assesses these but does not replace them. GitHub-first, with an abstraction layer for future extensibility to other platforms. Layer 2 is responsible for setting up all elements of proper observability, monitoring, and governance for the application deployed in Layer 3.
+- **Layer 2 (Substrate):** The agentic workflows running on GitHub. Stem configures and assesses these but does not replace them. GitHub-first, with an abstraction layer for future extensibility to other platforms. Layer 2 is responsible for setting up all elements of proper observability, monitoring, and governance for the application deployed in Layer 3. Agentic capabilities within this layer are implemented through the **[GitHub Copilot SDK](https://github.com/github/copilot-sdk)**, which provides the programmatic interface for interacting with GitHub Copilot's agent capabilities (code assistance, code review, issue triage, etc.).
 - **Layer 3 (Runtime):** The deployment target for software produced by the Layer 2 SDLC. Azure for now; designed to be runtime-agnostic. Stem is *not* part of the normal monitoring and observability of Layer 3. However, Stem may access Layer 3 (in a read-only capacity) solely for the purpose of verifying that Layer 2 successfully configured the runtime environment as expected.
 
 ---
@@ -121,6 +121,8 @@ Stem exposes **three interfaces** with shared core capabilities:
 | **CLI** | Terminal commands | `stem <command>` |
 | **MCP server** | Coding agents (GitHub Copilot, Claude Code, etc.) | `stem mcp` |
 | **Web UI** | Browser-based visual dashboard | `stem serve` |
+
+**Agentic implementation:** All agentic capabilities (workflow automation) are implemented through the **[GitHub Copilot CLI SDK](https://github.com/github/copilot-sdk)**. The SDK provides the core integration layer between Stem and GitHub Copilot's agent platform, enabling Stem to programmatically configure, invoke, and govern Copilot-powered workflows across target repositories.
 
 **Parity principle:** All three interfaces expose the same capabilities. A user should be able to `init`, `assess`, or any other Stem operation from the CLI, from a coding agent via MCP, or from the Web UI. If a capability is CLI-only, there must be a documented reason (e.g., interactive terminal prompts that have no MCP/Web equivalent). The CLI is the reference implementation — MCP and Web UI are built on top of the same core logic.
 
@@ -286,7 +288,7 @@ Blueprints are written in **plain Markdown with YAML frontmatter** and are desig
 | **UV** | Python package/project management |
 | **Typer** | CLI framework |
 | **Rich** | Terminal output formatting |
-| **GitHub Copilot CLI SDK** | Integration with GitHub Copilot agent capabilities |
+| **[GitHub Copilot SDK](https://github.com/github/copilot-sdk)** | Implementation of agentic capabilities — programmatic access to Copilot's code assistance, code review, and agent platform |
 | **GitHub MCP** | Connect to GitHub from agents |
 | **WorkIQ MCP** | Additional MCP integration |
 | **GitHub API (PyGithub / httpx)** | Direct GitHub API access when MCP is not needed |
