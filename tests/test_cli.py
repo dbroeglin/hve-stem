@@ -1,0 +1,33 @@
+"""Smoke tests for the stem CLI."""
+
+from typer.testing import CliRunner
+
+from stem.cli import app
+
+runner = CliRunner()
+
+
+def test_help_exits_zero() -> None:
+    result = runner.invoke(app, ["--help"])
+    assert result.exit_code == 0
+    assert "Control plane for agentic software development" in result.output
+
+
+def test_init_command_exists() -> None:
+    result = runner.invoke(app, ["init"])
+    assert result.exit_code == 0
+
+
+def test_assess_command_exists() -> None:
+    result = runner.invoke(app, ["assess"])
+    assert result.exit_code == 0
+
+
+def test_serve_command_exists() -> None:
+    result = runner.invoke(app, ["serve"])
+    assert result.exit_code == 0
+
+
+def test_mcp_command_exists() -> None:
+    result = runner.invoke(app, ["mcp"])
+    assert result.exit_code == 0

@@ -1,7 +1,43 @@
 [project]
 name = "hve-stem"
 version = "0.1.0"
-description = "HyperVelocity Stem"
+description = "HyperVelocity Stem — control plane for agentic software development"
 readme = "README.md"
-requires-python = ">=3.13"
-dependencies = []
+requires-python = ">=3.12,<3.13"
+authors = [{ name = "HVE Team" }]
+license = { text = "MIT" }
+dependencies = [
+    "typer",
+    "rich",
+]
+
+[project.scripts]
+stem = "stem.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/stem"]
+
+[dependency-groups]
+dev = ["black", "mypy", "pytest", "ruff"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.black]
+target-version = ["py312"]
+line-length = 88
