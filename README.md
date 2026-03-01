@@ -39,13 +39,13 @@ tests/                 # pytest test suite
 - **Python 3.12** with **UV** for package management
 - **Typer** + **Rich** for the CLI
 - **hatchling** build backend
-- **black**, **mypy**, **ruff**, **pytest** for dev tooling
+- **ruff**, **mypy**, **pytest** for dev tooling
 
 ## Development
 
 ```bash
 # Format
-black .
+ruff format .
 
 # Type check
 mypy src/

@@ -68,7 +68,7 @@ All Stem state lives in a **Git repository** — human-readable, version-control
 ### File formats
 
 | Format | Used for | Examples |
-|---|---|---|
+| --- | --- | --- |
 | **Markdown** (primary) | Blueprints, policies, instructions, narrative docs, assessment reports | `blueprints/python-microservice.md`, `policies/code-review.md`, `reports/2026-02-assess.md` |
 | **Markdown + frontmatter** | Linking related documents, adding metadata | YAML frontmatter for tags, relationships, timestamps |
 | **YAML** | Structured configuration, data-heavy settings | `stem.yaml` (project config), `targets.yaml` (repo inventory), workflow definitions |
@@ -77,7 +77,7 @@ All Stem state lives in a **Git repository** — human-readable, version-control
 ### State categories
 
 | Category | Purpose | Examples |
-|---|---|---|
+| --- | --- | --- |
 | **Connection config** | How Stem accesses and interacts with Layer 2 repos/orgs | Org/repo targets, API endpoints (authentication is external; see Authentication below) |
 | **Policies & instructions** | The rules and guardrails Stem enforces on Layer 2 | Approval policies, agent permissions, required workflows, blueprint definitions |
 | **Reports & audit trail** | Historical assessment results and change logs | Maturity scores over time, drift reports, remediation history |
@@ -87,7 +87,7 @@ All Stem state lives in a **Git repository** — human-readable, version-control
 There are two levels of versioning, both using **Git**:
 
 | Repo | What it is | How it's versioned |
-|---|---|---|
+| --- | --- | --- |
 | **`hve-stem`** (this repo) | The Stem tool itself — CLI code, default blueprints, default policies | Git tags and releases. This is the **upstream source of truth**. Updates to blueprints, policies, and tool code ship as new versions. |
 | **Stem instance repos** (created via `stem init`) | Individual control-plane repos for a team/org | Each is its own Git repo with its own commit history. Blueprints and policies are copied/rendered at `stem init` time. |
 
@@ -102,7 +102,7 @@ Updates flow **downstream** from `hve-stem` to instance repos via pull requests 
 Authentication is resolved at runtime through one of the following mechanisms (in priority order):
 
 | Mechanism | When to use |
-|---|---|
+| --- | --- |
 | **`gh` CLI auth** | Default for local development. If the user is authenticated via `gh auth login`, Stem piggybacks on that session. Zero config needed. |
 | **Environment variables** | CI/CD and automation. `GITHUB_TOKEN` or `STEM_GITHUB_TOKEN` for GitHub access; similar patterns for runtime credentials. |
 | **GitHub App** | Org-level deployments. A GitHub App installation provides scoped, rotatable tokens across multiple repos without personal credentials. |
@@ -117,7 +117,7 @@ The Stem config files (e.g., `targets.yaml`) reference *what* to connect to (org
 Stem exposes **three interfaces** with shared core capabilities:
 
 | Interface | Surface | How it's started |
-|---|---|---|
+| --- | --- | --- |
 | **CLI** | Terminal commands | `stem <command>` |
 | **MCP server** | Coding agents (GitHub Copilot, Claude Code, etc.) | `stem mcp` |
 | **Web UI** | Browser-based visual dashboard | `stem serve` |
@@ -129,7 +129,7 @@ Stem exposes **three interfaces** with shared core capabilities:
 Supported commands (invoked via CLI and available through parity across MCP/Web where applicable):
 
 | Command | Purpose |
-|---|---|
+| --- | --- |
 | `stem init` | Bootstrap a new project or onboard an existing repo with a Stem-managed SDLC blueprint. Sets up the necessary config files and directory structure within a Git repository. |
 | `stem assess` | Evaluate one or more repos against the desired SDLC blueprint. Reports on: **SDLC maturity** (which agentic capabilities are configured), **code/repo health** (test coverage, dependency freshness, security posture), and **drift detection** (current state vs. desired blueprint). |
 | `stem serve` | Launch the web UI locally for a visual dashboard experience. |
@@ -152,7 +152,7 @@ Stem's assessment is **checklist-based**: individual yes/no or scored checks, gr
 ### Theoretical backbone
 
 | Framework | Focus | How Stem uses it |
-|---|---|---|
+| --- | --- | --- |
 | **[DORA](https://dora.dev/guides/dora-metrics-four-keys/)** | Software delivery performance: throughput (change lead time, deployment frequency, failed deployment recovery time) and stability (change fail rate, deployment rework rate) | Map delivery-related checks to DORA's five metrics. Use as the benchmark for "is the pipeline healthy?" |
 | **[SPACE](https://queue.acm.org/detail.cfm?id=3454124)** | Developer productivity across 5 dimensions: Satisfaction, Performance, Activity, Communication & Collaboration, Efficiency & Flow | Organize repo/team-level checks into SPACE categories. Ensures Stem doesn't over-index on activity metrics alone. |
 | **[DevEx](https://queue.acm.org/detail.cfm?id=3595878)** | Developer experience through: feedback loops, cognitive load, flow state | Inform checks about developer-facing friction: CI speed, documentation quality, onboarding ease |
@@ -167,7 +167,7 @@ Stem organizes its checklist into **five assessment dimensions**. Each dimension
 Measures the health and speed of the software delivery pipeline.
 
 | Check | Data source | Maps to |
-|---|---|---|
+| --- | --- | --- |
 | Deployment frequency meets target | GitHub API (deployments/releases) | DORA: Deployment Frequency |
 | Change lead time within threshold | GitHub API (commit-to-deploy time) | DORA: Change Lead Time |
 | Failed deployment recovery time acceptable | GitHub API (incident/hotfix PRs) | DORA: Failed Deployment Recovery Time |
@@ -179,7 +179,7 @@ Measures the health and speed of the software delivery pipeline.
 Measures the structural quality and maintainability of the codebase.
 
 | Check | Data source | Maps to |
-|---|---|---|
+| --- | --- | --- |
 | Test automation present and configured | Repo inspection (test directories, CI test steps) | SPACE: Performance |
 | Dependency freshness (no critical outdated deps) | Repo inspection (lockfiles) + Dependabot alerts | SPACE: Performance |
 | Security scanning enabled (CodeQL, secret scanning) | Repo inspection + GitHub API | DORA capability: Pervasive Security |
@@ -192,7 +192,7 @@ Measures the structural quality and maintainability of the codebase.
 Measures how well team processes support collaboration and fast feedback.
 
 | Check | Data source | Maps to |
-|---|---|---|
+| --- | --- | --- |
 | PR review turnaround within threshold | GitHub API (PR review times) | SPACE: Efficiency & Flow |
 | PR size within guidelines (small batches) | GitHub API (PR diff stats) | DORA capability: Working in Small Batches |
 | Issue triage time within threshold | GitHub API (issue response times) | SPACE: Communication |
@@ -204,7 +204,7 @@ Measures how well team processes support collaboration and fast feedback.
 Measures how fully and effectively agentic capabilities are adopted in the SDLC. **This dimension has no external framework equivalent — it is Stem's unique contribution.**
 
 | Check | Data source | Maps to |
-|---|---|---|
+| --- | --- | --- |
 | GitHub Copilot enabled for the repo/org | GitHub API (Copilot settings) | Agentic: Code assistance |
 | Copilot usage metrics above adoption threshold | GitHub API (Copilot metrics) | Agentic: Code assistance |
 | Agentic workflows configured (gh-aw) | Repo inspection (`.github/` agentic config) | Agentic: Workflow automation |
@@ -219,7 +219,7 @@ Measures how fully and effectively agentic capabilities are adopted in the SDLC.
 Measures adherence to org-wide policies defined in Stem blueprints.
 
 | Check | Data source | Maps to |
-|---|---|---|
+| --- | --- | --- |
 | Repo matches assigned blueprint | Repo inspection vs. blueprint definition | Stem: Drift detection |
 | Required workflows present and unmodified | Repo inspection vs. blueprint | Stem: Policy compliance |
 | Required branch protection matches policy | GitHub API vs. policy definition | Stem: Policy compliance |
@@ -241,10 +241,10 @@ Portfolio dashboard (heatmap of repos × dimensions)
 **Traffic-light thresholds** (configurable per blueprint):
 
 | Color | Meaning | Default threshold |
-|---|---|---|
-| Green  | Healthy — meets or exceeds blueprint expectations | ≥ 80% |
-| Amber  | Needs attention — partial compliance or degrading trend | 50–79% |
-| Red    | Action required — significant gaps or policy violations | < 50% |
+| --- | --- | --- |
+| Green | Healthy — meets or exceeds blueprint expectations | ≥ 80% |
+| Amber | Needs attention — partial compliance or degrading trend | 50–79% |
+| Red | Action required — significant gaps or policy violations | < 50% |
 
 ### Assessment output
 
@@ -284,7 +284,7 @@ Blueprints are written in **plain Markdown with YAML frontmatter** and are desig
 ### Python CLI
 
 | Tool | Role |
-|---|---|
+| --- | --- |
 | **UV** | Python package/project management |
 | **Typer** | CLI framework |
 | **Rich** | Terminal output formatting |
@@ -292,13 +292,13 @@ Blueprints are written in **plain Markdown with YAML frontmatter** and are desig
 | **GitHub MCP** | Connect to GitHub from agents |
 | **WorkIQ MCP** | Additional MCP integration |
 | **GitHub API (PyGithub / httpx)** | Direct GitHub API access when MCP is not needed |
-| **Black & mypy** | Code formatting and type checking |
+| **Ruff & mypy** | Code formatting, linting, and type checking |
 | **pytest** | Testing framework |
 
 ### Web UI / API
 
 | Tool | Role |
-|---|---|
+| --- | --- |
 | **FastAPI** | Backend API for the web UI |
 | **Next.js** | Frontend web application |
 | **FastMCP** | MCP server implementation (for `stem mcp`) |
@@ -315,4 +315,3 @@ To simplify distribution, the Next.js frontend will be built as a static HTML ex
 ---
 
 ## Open Questions
-

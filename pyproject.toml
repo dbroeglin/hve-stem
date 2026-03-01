@@ -9,6 +9,7 @@ license = { text = "MIT" }
 dependencies = [
     "typer",
     "rich",
+    "github-copilot-sdk",
 ]
 
 [project.scripts]
@@ -22,7 +23,7 @@ build-backend = "hatchling.build"
 packages = ["src/stem"]
 
 [dependency-groups]
-dev = ["black", "mypy", "pytest", "ruff"]
+dev = ["mypy", "pytest", "ruff"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -38,6 +39,3 @@ line-length = 88
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
 
-[tool.black]
-target-version = ["py312"]
-line-length = 88

@@ -33,7 +33,11 @@
 				"python.testing.unittestEnabled": false,
 				"python.testing.pytestEnabled": true,
 				"[python]": {
-					"editor.defaultFormatter": "ms-python.black-formatter"
+					"editor.defaultFormatter": "charliermarsh.ruff",
+					"editor.codeActionsOnSave": {
+						"source.fixAll.ruff": "explicit",
+						"source.organizeImports.ruff": "explicit"
+					}
 				},
 				"remote.extensionKind": {
 					"ms-azuretools.vscode-docker": "workspace"
@@ -48,7 +52,7 @@
 				"ms-azuretools.vscode-azure-mcp-server",
 				"ms-azuretools.vscode-azureresourcegroups",
 				"ms-azuretools.vscode-docker",
-				"ms-python.black-formatter",
+				"charliermarsh.ruff",
 				"ms-python.debugpy",
 				"ms-python.mypy-type-checker",
 				"ms-python.python",

@@ -2,7 +2,7 @@
 
 - Language: Python 3.12.
 - Package manager: uv; `pyproject.toml` is the single source of truth for all project metadata, dependencies, and tool configurations.
-- Dependencies: Runtime dependencies are in `[project.dependencies]`; dev tools (e.g., black, mypy, pytest, ruff) are in the `dev` group under `[dependency-groups]`. No `requirements.txt` files are used.
+- Dependencies: Runtime dependencies are in `[project.dependencies]`; dev tools (e.g., mypy, pytest, ruff) are in the `dev` group under `[dependency-groups]`. No `requirements.txt` files are used.
 - Layout: `src/stem/` for package code, `tests/` for pytest, `scripts/` for helpers.
 - Builds: hatchling backend.
 - Entry point: `stem` CLI command via Typer (`stem.cli:app`).
@@ -10,7 +10,7 @@
 ## Code style
 
 - Follow PEP 8 guidelines and use `snake_case` for variables and functions.
-- Format all Python code with `black`.
+- Format all Python code with `ruff format`.
 - Use explicit type hints for all function signatures.
 - Keep functions small, focused, and pure where practical.
 - Write clear docstrings for all public modules, classes, and functions.
@@ -20,7 +20,7 @@
 
 - Use `pytest` as the test runner.
 - Write clear, focused unit tests for all new logic.
-- Run validation: `black . && mypy src/ && ruff check src/ && pytest`
+- Run validation: `ruff format --check . && mypy src/ && ruff check src/ && pytest`
 
 ## When working with Mardkown files.
 
