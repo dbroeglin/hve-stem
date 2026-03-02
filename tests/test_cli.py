@@ -19,8 +19,9 @@ def test_init_command_exists() -> None:
 
 
 def test_assess_command_exists() -> None:
-    result = runner.invoke(app, ["assess"])
+    result = runner.invoke(app, ["assess", "--help"])
     assert result.exit_code == 0
+    assert "owner/repo" in result.output.lower() or "REPO" in result.output
 
 
 def test_serve_command_exists() -> None:
