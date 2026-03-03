@@ -11,6 +11,8 @@ from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.text import Text
 
+from stem.workspace import Workspace
+
 console = Console()
 
 SYSTEM_MESSAGE = """\
@@ -68,7 +70,27 @@ MCP_SERVERS: dict[str, MCPServerConfig] = {
 }
 
 
-async def _run_assessment(repo: str, model: str, timeout: float) -> str:
+def _build_system_message(ws: Workspace) -> str:
+    """Combine the base system message with workspace-discovered context."""
+    parts = [SYSTEM_MESSAGE]
+
+    if ws.agents:
+        parts.append("\n## Agent Definitions\n")
+        for agent in ws.agents:
+            parts.append(f"### {agent.name}\n{agent.body}\n")
+
+    if ws.skills:
+        parts.append("\n## Available Skills\n")
+        for skill in ws.skills:
+            header = f"### {skill.name}"
+            if skill.description:
+                header += f" — {skill.description}"
+            parts.append(f"{header}\n{skill.body}\n")
+
+    return "\n".join(parts)
+
+
+async def _run_assessment(repo: str, model: str, timeout: float, ws: Workspace) -> str:
     """Create a Copilot session and run the SDLC assessment."""
     client = CopilotClient()
     await client.start()
@@ -79,7 +101,7 @@ async def _run_assessment(repo: str, model: str, timeout: float) -> str:
                 "model": model,
                 "on_permission_request": PermissionHandler.approve_all,
                 "mcp_servers": MCP_SERVERS,
-                "system_message": SYSTEM_MESSAGE,
+                "system_message": _build_system_message(ws),
             }
         )
 
@@ -92,9 +114,6 @@ async def _run_assessment(repo: str, model: str, timeout: float) -> str:
                 console.print(
                     f"  [dim]⚙  calling tool:[/dim] [cyan]{event.data.tool_name}[/cyan]"
                 )
-            elif event.type == SessionEventType.ASSISTANT_MESSAGE:
-                if event.data.content:
-                    console.print(f"  [dim]💬 assistant:[/dim] {event.data.content}")
 
         session.on(_on_event)
 
@@ -109,7 +128,7 @@ async def _run_assessment(repo: str, model: str, timeout: float) -> str:
         response = await session.send_and_wait({"prompt": prompt}, timeout=timeout)
 
         if response and response.data:
-            return response.data.content
+            return str(response.data.content)
         return "No response received."
     finally:
         await client.stop()
@@ -152,7 +171,10 @@ def assess(
     )
 
     try:
-        report = asyncio.run(_run_assessment(repo, model, timeout))
+        from stem.cli import get_workspace
+
+        ws = get_workspace()
+        report = asyncio.run(_run_assessment(repo, model, timeout, ws))
     except Exception as exc:
         console.print(f"[bold red]Error:[/bold red] {exc}")
         raise typer.Exit(code=1)
