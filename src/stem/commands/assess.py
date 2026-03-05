@@ -90,8 +90,25 @@ def _build_system_message(ws: Workspace) -> str:
     return "\n".join(parts)
 
 
-async def _run_assessment(repo: str, model: str, timeout: float, ws: Workspace) -> str:
-    """Create a Copilot session and run the SDLC assessment."""
+async def _run_assessment(
+    repo: str,
+    model: str,
+    timeout: float,
+    ws: Workspace,
+    output: Console | None = None,
+) -> str:
+    """Create a Copilot session and run the SDLC assessment.
+
+    Args:
+        repo: GitHub repository slug (owner/repo).
+        model: Copilot model identifier.
+        timeout: Seconds to wait for the Copilot session to respond.
+        ws: Workspace containing discovered agents and skills.
+        output: Console to write progress messages to. Defaults to stdout.
+            Pass ``Console(stderr=True)`` when calling from an MCP tool handler
+            to keep stdout free for the JSON-RPC protocol stream.
+    """
+    _console = output if output is not None else console
     client = CopilotClient()
     await client.start()
 
@@ -107,11 +124,11 @@ async def _run_assessment(repo: str, model: str, timeout: float, ws: Workspace) 
 
         def _on_event(event: SessionEvent) -> None:
             if event.type == SessionEventType.ASSISTANT_REASONING:
-                console.print(
+                _console.print(
                     f"  [dim]💭 reasoning:[/dim] [italic]{event.data.content}[/italic]"
                 )
             elif event.type == SessionEventType.TOOL_EXECUTION_START:
-                console.print(
+                _console.print(
                     f"  [dim]⚙  calling tool:[/dim] [cyan]{event.data.tool_name}[/cyan]"
                 )
 

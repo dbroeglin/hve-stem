@@ -10,6 +10,7 @@ dependencies = [
     "typer",
     "rich",
     "github-copilot-sdk",
+    "mcp>=1.26.0",
 ]
 
 [project.scripts]
