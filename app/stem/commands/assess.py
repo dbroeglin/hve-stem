@@ -1,12 +1,17 @@
 """stem assess — evaluate repos against desired SDLC blueprints."""
 
 import asyncio
+from collections.abc import Callable
 from typing import Annotated, Any
 
 import typer
-from copilot import CopilotClient, MCPServerConfig, PermissionHandler
+from copilot import CopilotClient, MCPServerConfig
 from copilot.generated.session_events import SessionEvent, SessionEventType
-from copilot.types import SystemMessageReplaceConfig
+from copilot.types import (
+    PermissionRequest,
+    PermissionRequestResult,
+    SystemMessageReplaceConfig,
+)
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.panel import Panel
@@ -86,6 +91,61 @@ def _tool_detail(tool_name: str, mcp_server: str | None, args: Any) -> str:
             return f"[dim]{val[:70] + ('…' if len(val) > 70 else '')}[/dim]"
 
     return ""
+
+
+_PERMISSION_KIND_STYLE: dict[str, str] = {
+    "shell": "yellow",
+    "write": "green",
+    "read": "blue",
+    "mcp": "magenta",
+    "url": "dim",
+    "custom-tool": "cyan",
+}
+
+
+def _format_permission_line(
+    request: PermissionRequest, invocation: dict[str, str]
+) -> str:
+    """Build a Rich-markup string for a permission approval."""
+    kind: str = request.get("kind") or "unknown"
+    color = _PERMISSION_KIND_STYLE.get(kind, "cyan")
+    kind_display = f"[bold {color}]{kind}[/bold {color}]"
+
+    detail = ""
+    cmd: str = invocation.get("command") or invocation.get("cmd") or ""
+    path: str = invocation.get("path") or invocation.get("file") or ""
+    tool_name: str = invocation.get("tool_name") or invocation.get("name") or ""
+
+    if cmd:
+        cmd = cmd.strip().replace("\n", "; ")
+        truncated = cmd[:100] + ("…" if len(cmd) > 100 else "")
+        detail = f"[yellow]$ {truncated}[/yellow]"
+    elif path:
+        detail = f"[blue]{path}[/blue]"
+    elif tool_name:
+        detail = f"[dim]{tool_name}[/dim]"
+
+    line = f"  [dim]🔐 [/dim] [bold green]✓[/bold green]  {kind_display}"
+    if detail:
+        line += f"  [dim]›[/dim]  {detail}"
+    return line
+
+
+def _make_permission_handler(
+    output: Console,
+) -> Callable[[PermissionRequest, dict[str, str]], PermissionRequestResult]:
+    """Return a permission handler that logs approvals to *output*."""
+
+    def _handler(
+        request: PermissionRequest, invocation: dict[str, str]
+    ) -> PermissionRequestResult:
+        # Auto-accept MCP tool calls silently — they are already displayed
+        # via the TOOL_EXECUTION_START event handler.
+        if request.get("kind") != "mcp":
+            output.print(_format_permission_line(request, invocation))
+        return PermissionRequestResult(kind="approved")
+
+    return _handler
 
 
 def _format_tool_line(event: SessionEvent) -> str:
@@ -202,7 +262,7 @@ async def _run_assessment(
         session = await client.create_session(
             {
                 "model": model,
-                "on_permission_request": PermissionHandler.approve_all,
+                "on_permission_request": _make_permission_handler(_console),
                 "mcp_servers": MCP_SERVERS,
                 "system_message": SystemMessageReplaceConfig(
                     mode="replace", content=SYSTEM_MESSAGE
