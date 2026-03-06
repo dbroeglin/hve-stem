@@ -18,19 +18,20 @@ def test_discovers_skills() -> None:
     assert len(ws.skills) >= 1
 
     names = [s.name for s in ws.skills]
-    assert "toto" in names
+    assert "foo" in names
+    assert "summarize-repo" in names
 
 
 def test_skill_fields_populated() -> None:
     ws = load_workspace(WORKSPACE_ROOT)
-    toto = next(s for s in ws.skills if s.name == "toto")
+    foo = next(s for s in ws.skills if s.name == "foo")
 
-    assert isinstance(toto, Skill)
-    assert toto.description == "This is a skill for Totos"
-    assert "I'm a Toto!!!" in toto.body
+    assert isinstance(foo, Skill)
+    assert foo.description == "Fetch and summarise the README of a GitHub repository"
+    assert "README" in foo.body
     assert (
-        toto.path
-        == (WORKSPACE_ROOT / ".agents" / "skills" / "toto" / "SKILL.md").resolve()
+        foo.path
+        == (WORKSPACE_ROOT / ".agents" / "skills" / "foo" / "SKILL.md").resolve()
     )
 
 
@@ -40,6 +41,7 @@ def test_discovers_agents() -> None:
 
     names = [a.name for a in ws.agents]
     assert "assessor" in names
+    assert "stem-tester" in names
 
 
 def test_agent_fields_populated() -> None:
@@ -51,6 +53,26 @@ def test_agent_fields_populated() -> None:
     assert (
         assessor.path
         == (WORKSPACE_ROOT / ".github" / "agents" / "assessor.agent.md").resolve()
+    )
+
+
+def test_stem_dir_skill_fields() -> None:
+    ws = load_workspace(WORKSPACE_ROOT)
+    summarizer = next(s for s in ws.skills if s.name == "summarize-repo")
+    assert (
+        summarizer.description
+        == "Produce a structured SDLC maturity summary for a GitHub repository"
+    )
+    assert "SDLC" in summarizer.body
+
+
+def test_stem_dir_agent_fields() -> None:
+    ws = load_workspace(WORKSPACE_ROOT)
+    tester = next(a for a in ws.agents if a.name == "stem-tester")
+    assert "namespace separation" in tester.body
+    assert (
+        tester.path
+        == (WORKSPACE_ROOT / "stem" / "agents" / "stem-tester.agent.md").resolve()
     )
 
 

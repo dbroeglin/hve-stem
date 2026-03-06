@@ -129,32 +129,44 @@ def _parse_agent(agent_file: Path) -> Agent | None:
 def load_workspace(root: Path) -> Workspace:
     """Scan *root* for skills and agents and return a populated ``Workspace``.
 
-    Expected layout::
+    Searches two sets of directories:
 
-        <root>/
-          .agents/skills/<skill-name>/SKILL.md
-          .github/agents/<agent-name>.agent.md
+    1. **Stem internal** (Copilot SDK workdir):
+       ``<root>/stem/skills/<skill-name>/SKILL.md``
+       ``<root>/stem/agents/<agent-name>.agent.md``
+
+    2. **Legacy / developer-facing**:
+       ``<root>/.agents/skills/<skill-name>/SKILL.md``
+       ``<root>/.github/agents/<agent-name>.agent.md``
     """
     root = root.resolve()
 
     # --- skills ---
     skills: list[Skill] = []
-    skills_dir = root / ".agents" / "skills"
-    if skills_dir.is_dir():
-        for child in sorted(skills_dir.iterdir()):
-            if child.is_dir():
-                skill = _parse_skill(child)
-                if skill is not None:
-                    skills.append(skill)
+    skill_dirs = [
+        root / "stem" / "skills",
+        root / ".agents" / "skills",
+    ]
+    for skills_dir in skill_dirs:
+        if skills_dir.is_dir():
+            for child in sorted(skills_dir.iterdir()):
+                if child.is_dir():
+                    skill = _parse_skill(child)
+                    if skill is not None:
+                        skills.append(skill)
 
     # --- agents ---
     agents: list[Agent] = []
-    agents_dir = root / ".github" / "agents"
-    if agents_dir.is_dir():
-        for child in sorted(agents_dir.iterdir()):
-            if child.suffix == ".md" and child.stem.endswith(".agent"):
-                agent = _parse_agent(child)
-                if agent is not None:
-                    agents.append(agent)
+    agent_dirs = [
+        root / "stem" / "agents",
+        root / ".github" / "agents",
+    ]
+    for agents_dir in agent_dirs:
+        if agents_dir.is_dir():
+            for child in sorted(agents_dir.iterdir()):
+                if child.suffix == ".md" and child.stem.endswith(".agent"):
+                    agent = _parse_agent(child)
+                    if agent is not None:
+                        agents.append(agent)
 
     return Workspace(root=root, skills=skills, agents=agents)

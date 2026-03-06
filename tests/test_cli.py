@@ -14,8 +14,9 @@ def test_help_exits_zero() -> None:
 
 
 def test_init_command_exists() -> None:
-    result = runner.invoke(app, ["init"])
+    result = runner.invoke(app, ["init", "--help"])
     assert result.exit_code == 0
+    assert "bootstrap" in result.output.lower() or "instance" in result.output.lower()
 
 
 def test_assess_command_exists() -> None:

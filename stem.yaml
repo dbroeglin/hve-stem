@@ -1,0 +1,8 @@
+stem_version: 0.1.0
+name: hve-stem
+description: "SDLC control plane \u2014 hve-stem"
+blueprint: default.md
+scoring:
+  green: 80
+  amber: 50
+targets: []

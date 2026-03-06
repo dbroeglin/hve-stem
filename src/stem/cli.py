@@ -1,5 +1,6 @@
 """Stem CLI — the primary interface for HVE Stem."""
 
+import sys
 from pathlib import Path
 from typing import Optional
 
@@ -20,6 +21,9 @@ app = typer.Typer(
 # Module-level workspace populated by the app callback before any command runs.
 _workspace: Workspace | None = None
 
+# Commands that do not require a pre-existing workspace.
+_SKIP_WORKSPACE_COMMANDS = {"init"}
+
 
 def get_workspace() -> Workspace:
     """Return the current workspace. Must be called after CLI initialisation."""
@@ -35,6 +39,14 @@ def _version_callback(value: bool) -> None:  # noqa: FBT001
 
         console.print(f"stem {__version__}")
         raise typer.Exit()
+
+
+def _running_command() -> str | None:
+    """Return the subcommand name from sys.argv, or None."""
+    for arg in sys.argv[1:]:
+        if not arg.startswith("-"):
+            return arg
+    return None
 
 
 @app.callback()
@@ -57,6 +69,9 @@ def main(
 ) -> None:
     """Control plane for agentic software development."""
     global _workspace  # noqa: PLW0603
+    cmd = _running_command()
+    if cmd in _SKIP_WORKSPACE_COMMANDS:
+        return
     resolved = (workdir or Path.cwd()).resolve()
     _workspace = load_workspace(resolved)
 
