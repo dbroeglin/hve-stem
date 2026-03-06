@@ -182,33 +182,16 @@ def _format_tool_line(event: SessionEvent) -> str:
     return line
 
 
-SYSTEM_MESSAGE = """\
-You are HVE Stem — an expert SDLC assessment agent.
-
-Given a GitHub repository, perform a thorough assessment covering:
-
-1. **Repository Health**: README quality, license, contributing guidelines,
-   issue/PR templates, branch protection, code owners.
-2. **CI/CD Maturity**: Workflow coverage (build, test, lint, deploy),
-   use of reusable workflows, secrets management, environment gates.
-3. **Code Quality**: Linting configuration, type checking, test coverage
-   tooling, dependency management (Dependabot/Renovate).
-4. **Security Posture**: Dependency scanning, secret scanning, CODEOWNERS,
-   signed commits, SBOM generation.
-5. **Agentic Readiness**: Copilot instructions, MCP server configs,
-   GitHub Actions bot integration, automated issue triage, AI-assisted
-   code review setup.
-
-For each area, assign a maturity level:
-- 🔴 **Missing** — not present at all
-- 🟡 **Basic** — present but minimal
-- 🟢 **Mature** — well-configured and maintained
-
-Finish with a prioritised list of **recommended next steps** the team
-should take to improve their SDLC posture.
-
-Format your entire response as Markdown.
-"""
+def _load_system_message(workspace_root: Path) -> str:
+    """Load the assessor system message from the stem instance."""
+    agent_file = workspace_root / "stem" / "agents" / "assessor.agent.md"
+    if not agent_file.is_file():
+        msg = (
+            f"Assessor agent file not found: {agent_file}\n"
+            "Run 'stem init' to create a Stem instance with the default configuration."
+        )
+        raise FileNotFoundError(msg)
+    return agent_file.read_text(encoding="utf-8")
 
 
 def _load_mcp_servers(workspace_root: Path) -> dict[str, MCPServerConfig]:
@@ -250,13 +233,14 @@ async def _run_assessment(
     try:
         stem_dir = str(ws.root / "stem")
         mcp_servers = _load_mcp_servers(ws.root)
+        system_message = _load_system_message(ws.root)
         session = await client.create_session(
             {
                 "model": model,
                 "on_permission_request": _make_permission_handler(_console),
                 "mcp_servers": mcp_servers,
                 "system_message": SystemMessageReplaceConfig(
-                    mode="replace", content=SYSTEM_MESSAGE
+                    mode="replace", content=system_message
                 ),
                 "working_directory": stem_dir,
                 "skill_directories": [stem_dir + "/skills"],
