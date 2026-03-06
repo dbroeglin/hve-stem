@@ -1,5 +1,6 @@
 """Tests for stem init — instance repository scaffolding."""
 
+import json
 from pathlib import Path
 
 import yaml
@@ -112,3 +113,16 @@ def test_scaffold_readme_contains_name(tmp_path: Path) -> None:
 
     readme = (dest / "README.md").read_text()
     assert "cool-team" in readme
+
+
+def test_scaffold_creates_mcp_json(tmp_path: Path) -> None:
+    dest = tmp_path / "inst"
+    dest.mkdir()
+    _scaffold(dest, targets=[], name="inst")
+
+    mcp_json = dest / "stem" / "mcp.json"
+    assert mcp_json.is_file()
+
+    data = json.loads(mcp_json.read_text())
+    assert "mcpServers" in data
+    assert "github" in data["mcpServers"]

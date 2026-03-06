@@ -113,9 +113,8 @@ def _scaffold(
         blueprint_source=blueprint_source,
     )
 
-    # 4. Copy Stem's internal agents and skills (Copilot SDK workdir)
-    _copy_tree(_data_path("stem/agents"), dest / "stem" / "agents")
-    _copy_tree(_data_path("stem/skills"), dest / "stem" / "skills")
+    # 4. Copy Stem's internal config, agents, and skills (Copilot SDK workdir)
+    _copy_tree(_data_path("stem"), dest / "stem")
 
     # 5. Copy developer-facing Copilot config into .github/
     copilot_src = _data_path("copilot")

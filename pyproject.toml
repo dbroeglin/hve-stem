@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "HyperVelocity Stem — control plane for agentic software development"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
-authors = [{ name = "HVE Team" }]
+authors = [{ name = "HVE Stem Team" }]
 license = { text = "MIT" }
 dependencies = [
     "typer",

@@ -1,7 +1,9 @@
 """stem assess — evaluate repos against desired SDLC blueprints."""
 
 import asyncio
+import json
 from collections.abc import Callable
+from pathlib import Path
 from typing import Annotated, Any
 
 import typer
@@ -208,31 +210,19 @@ should take to improve their SDLC posture.
 Format your entire response as Markdown.
 """
 
-MCP_SERVERS: dict[str, MCPServerConfig] = {
-    "microsoftdocs": {
-        "type": "http",
-        "url": "https://learn.microsoft.com/api/mcp",
-        "tools": ["*"],
-    },
-    "workiq": {
-        "type": "local",
-        "command": "npx",
-        "args": ["-y", "@microsoft/workiq@latest", "mcp"],
-        "tools": ["*"],
-    },
-    "azure-mcp": {
-        "type": "local",
-        "command": "npx",
-        "args": ["-y", "@azure/mcp@latest", "server", "start"],
-        "tools": ["*"],
-    },
-    "github": {
-        "type": "http",
-        "url": "https://api.githubcopilot.com/mcp/",
-        "headers": {"Authorization": "Bearer ${TOKEN}"},
-        "tools": ["*"],
-    },
-}
+
+def _load_mcp_servers(workspace_root: Path) -> dict[str, MCPServerConfig]:
+    """Load MCP server configuration from the instance ``stem/mcp.json``."""
+    mcp_json = workspace_root / "stem" / "mcp.json"
+    if not mcp_json.is_file():
+        msg = (
+            f"MCP configuration file not found: {mcp_json}\n"
+            "Run 'stem init' to create a Stem instance with the default configuration."
+        )
+        raise FileNotFoundError(msg)
+    data = json.loads(mcp_json.read_text(encoding="utf-8"))
+    servers: dict[str, MCPServerConfig] = data.get("mcpServers", {})
+    return servers
 
 
 async def _run_assessment(
@@ -259,11 +249,12 @@ async def _run_assessment(
 
     try:
         stem_dir = str(ws.root / "stem")
+        mcp_servers = _load_mcp_servers(ws.root)
         session = await client.create_session(
             {
                 "model": model,
                 "on_permission_request": _make_permission_handler(_console),
-                "mcp_servers": MCP_SERVERS,
+                "mcp_servers": mcp_servers,
                 "system_message": SystemMessageReplaceConfig(
                     mode="replace", content=SYSTEM_MESSAGE
                 ),

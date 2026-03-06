@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "microsoftdocs": {
+      "type": "http",
+      "url": "https://learn.microsoft.com/api/mcp",
+      "tools": ["*"]
+    },
+    "workiq": {
+      "type": "local",
+      "command": "npx",
+      "args": ["-y", "@microsoft/workiq@latest", "mcp"],
+      "tools": ["*"]
+    },
+    "azure-mcp": {
+      "type": "local",
+      "command": "npx",
+      "args": ["-y", "@azure/mcp@latest", "server", "start"],
+      "tools": ["*"]
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${TOKEN}"
+      },
+      "tools": ["*"]
+    }
+  }
+}

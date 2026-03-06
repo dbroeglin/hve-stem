@@ -2,7 +2,7 @@
 title: "ADR-0003: Stem Instance Repository Structure"
 status: "Accepted"
 date: "2026-03-06"
-authors: "HVE Team"
+authors: "HVE Stem Team"
 tags: ["architecture", "repository", "instance", "git"]
 supersedes: ""
 superseded_by: ""
@@ -45,6 +45,7 @@ repositories. The layout is:
   README.md
   .gitignore
   blueprints/             # Blueprints and policies (flat, front-matter typed)
+  stem/mcp.json           # MCP server configuration (see ADR-0007)
   stem/agents/            # Stem internal Copilot SDK agents
   stem/skills/            # Stem internal Copilot SDK skills
   .github/                # Developer-facing Copilot agents/skills/prompts
@@ -137,3 +138,4 @@ source configuration. This was chosen because:
 - **REF-001**: [ADR-0004 — Agent/Skill Namespace Separation](adr-0004-agent-skill-namespace-separation.md) — explains why `stem/` and `.github/` are separate.
 - **REF-002**: [ADR-0005 — Blueprint and Policy Colocation](adr-0005-blueprint-and-policy-colocation.md) — details the `blueprints/` directory layout.
 - **REF-003**: NARRATIVE.md §Stem State & Storage — the design principle that all Stem state lives in Git.
+- **REF-004**: [ADR-0007 — Externalized MCP Server Configuration](adr-0007-externalized-mcp-server-configuration.md) — details the `stem/mcp.json` configuration file.

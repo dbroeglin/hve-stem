@@ -2,7 +2,7 @@
 title: "ADR-0001: Python CLI as the Foundation Technology"
 status: "Accepted"
 date: "2026-03-06"
-authors: "HVE Team"
+authors: "HVE Stem Team"
 tags: ["architecture", "language", "cli", "mvp", "foundation"]
 supersedes: ""
 superseded_by: ""

@@ -2,7 +2,7 @@
 title: "ADR-0002: GitHub Copilot SDK for Agentic Capabilities"
 status: "Accepted"
 date: "2026-03-06"
-authors: "HVE Team"
+authors: "HVE Stem Team"
 tags: ["architecture", "copilot", "sdk", "agentic", "ai"]
 supersedes: ""
 superseded_by: ""

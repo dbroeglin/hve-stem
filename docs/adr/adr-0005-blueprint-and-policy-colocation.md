@@ -2,7 +2,7 @@
 title: "ADR-0005: Blueprint and Policy Colocation"
 status: "Accepted"
 date: "2026-03-06"
-authors: "HVE Team"
+authors: "HVE Stem Team"
 tags: ["architecture", "blueprints", "policies", "content-model"]
 supersedes: ""
 superseded_by: ""

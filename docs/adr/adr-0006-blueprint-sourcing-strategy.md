@@ -2,7 +2,7 @@
 title: "ADR-0006: Blueprint Sourcing Strategy"
 status: "Accepted"
 date: "2026-03-06"
-authors: "HVE Team"
+authors: "HVE Stem Team"
 tags: ["architecture", "blueprints", "sourcing", "cli", "init"]
 supersedes: ""
 superseded_by: ""

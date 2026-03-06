@@ -2,7 +2,7 @@
 title: "ADR-0004: Agent/Skill Namespace Separation"
 status: "Accepted"
 date: "2026-03-06"
-authors: "HVE Team"
+authors: "HVE Stem Team"
 tags: ["architecture", "agents", "skills", "copilot-sdk", "namespace"]
 supersedes: ""
 superseded_by: ""
