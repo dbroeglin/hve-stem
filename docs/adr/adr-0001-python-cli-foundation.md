@@ -53,13 +53,13 @@ Build Stem as a **Python 3.12 CLI application** using the following stack:
 |-------------------|---------------------------------------------------------------------------|
 | CLI framework     | [Typer](https://typer.tiangolo.com/)                                      |
 | Terminal output   | [Rich](https://rich.readthedocs.io/)                                      |
-| MCP server        | [mcp](https://pypi.org/project/mcp/) (official Python MCP SDK)           |
-| Copilot SDK       | [github-copilot-sdk](https://github.com/github/copilot-sdk)              |
-| Configuration     | [PyYAML](https://pyyaml.org/)                                            |
-| Build system      | [Hatchling](https://hatch.pypa.io/)                                      |
-| Package manager   | [uv](https://github.com/astral-sh/uv)                                    |
-| Linting/Formatting| [Ruff](https://docs.astral.sh/ruff/)                                     |
-| Type checking     | [mypy](https://mypy-lang.org/) (strict mode)                             |
+| MCP server        | [mcp](https://pypi.org/project/mcp/) (official Python MCP SDK)            |
+| Copilot SDK       | [github-copilot-sdk](https://github.com/github/copilot-sdk)               |
+| Configuration     | [PyYAML](https://pyyaml.org/)                                             |
+| Build system      | [Hatchling](https://hatch.pypa.io/)                                       |
+| Package manager   | [uv](https://github.com/astral-sh/uv)                                     |
+| Linting/Formatting| [Ruff](https://docs.astral.sh/ruff/)                                      |
+| Type checking     | [mypy](https://mypy-lang.org/) (strict mode)                              |
 | Testing           | [pytest](https://docs.pytest.org/)                                        |
 
 The CLI entry point is `stem` (via `stem.cli:app`), registered as a
@@ -174,17 +174,17 @@ This stack was chosen because:
 ## Implementation Notes
 
 - **IMP-001**: The CLI entry point is `stem = "stem.cli:app"` in
-  `pyproject.toml`. All commands are registered in `src/stem/cli.py` via
+  `pyproject.toml`. All commands are registered in `app/stem/cli.py` via
   `app.command()`.
-- **IMP-002**: Core command logic lives in `src/stem/commands/<command>.py`.
+- **IMP-002**: Core command logic lives in `app/stem/commands/<command>.py`.
   Each command module exports a function that is registered on the Typer
   app. Both the CLI and MCP interfaces call the same underlying functions,
   ensuring parity.
-- **IMP-003**: The MCP server (`src/stem/commands/mcp.py`) wraps core
+- **IMP-003**: The MCP server (`app/stem/commands/mcp.py`) wraps core
   command functions with `@_mcp.tool()` decorators from `FastMCP`. Adding
   new MCP tools requires only a decorated async wrapper function.
 - **IMP-004**: The validation pipeline is:
-  `ruff format --check . && mypy src/ && ruff check src/ && pytest`.
+  `ruff format --check . && mypy app/ && ruff check app/ && pytest`.
   All four checks must pass before merging.
 
 ## References

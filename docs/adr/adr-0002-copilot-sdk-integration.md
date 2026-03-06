@@ -180,7 +180,7 @@ This approach was chosen because:
 ## Implementation Notes
 
 - **IMP-001**: The Copilot SDK integration lives in
-  `src/stem/commands/assess.py`. The `_run_assessment()` async function
+  `app/stem/commands/assess.py`. The `_run_assessment()` async function
   is the shared core used by both the CLI command and the MCP tool handler.
 - **IMP-002**: MCP servers are declared in the `MCP_SERVERS` module-level
   dictionary. Each entry specifies the server type (`http` or `local`),

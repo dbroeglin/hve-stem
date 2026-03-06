@@ -125,7 +125,7 @@ source configuration. This was chosen because:
 - **IMP-001**: `stem init` scaffolds this directory structure automatically,
   creating `stem.yaml`, `blueprints/`, `stem/agents/`, `stem/skills/`,
   `reports/`, and `remediation/` directories.
-- **IMP-002**: The `load_workspace()` function in `src/stem/workspace.py`
+- **IMP-002**: The `load_workspace()` function in `app/stem/workspace.py`
   scans `stem/agents/` and `stem/skills/` for Copilot SDK artefacts. Any
   changes to the directory layout must be reflected there.
 - **IMP-003**: Success criteria: running `stem init` in an empty Git

@@ -42,7 +42,7 @@ Implement a two-tier sourcing strategy where a bundled default blueprint is the
 baseline, and a remote GitHub repository can optionally replace it:
 
 1. **Default (bundled):** A default blueprint ships inside the `hve-stem`
-   Python package at `src/stem/data/blueprints/default.md`. Running
+   Python package at `app/stem/data/blueprints/default.md`. Running
    `stem init` with no extra flags copies this into `blueprints/`. Works
    offline, zero config.
 
@@ -146,7 +146,7 @@ This approach was chosen because:
 ## Implementation Notes
 
 - **IMP-001**: The default blueprint is bundled at
-  `src/stem/data/blueprints/default.md` and installed as package data via
+  `app/stem/data/blueprints/default.md` and installed as package data via
   hatchling.
 - **IMP-002**: `stem init` copies the bundled blueprint into `blueprints/`
   by default. When `--blueprint <owner/repo>` is provided, the remote fetch
