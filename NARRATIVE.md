@@ -71,7 +71,7 @@ All Stem state lives in a **Git repository** — human-readable, version-control
 | --- | --- | --- |
 | **Markdown** (primary) | Blueprints, policies, instructions, narrative docs, assessment reports | `blueprints/python-microservice.md`, `policies/code-review.md`, `reports/2026-02-assess.md` |
 | **Markdown + frontmatter** | Linking related documents, adding metadata | YAML frontmatter for tags, relationships, timestamps |
-| **YAML** | Structured configuration, data-heavy settings | `stem.yaml` (project config), `targets.yaml` (repo inventory), workflow definitions |
+| **YAML** | Structured configuration, data-heavy settings | `stem.yaml` (project config, repo inventory), workflow definitions |
 | **JSON / CSV** | Tabular data, machine-readable exports | Assessment score history, metric exports |
 
 ### State categories
@@ -108,7 +108,7 @@ Authentication is resolved at runtime through one of the following mechanisms (i
 | **GitHub App** | Org-level deployments. A GitHub App installation provides scoped, rotatable tokens across multiple repos without personal credentials. |
 | **Keyring / OS credential store** | Optional. Stem can read tokens from the OS keychain (via Python `keyring`) for users who prefer not to use env vars or `gh`. |
 
-The Stem config files (e.g., `targets.yaml`) reference *what* to connect to (org name, repo list, API endpoints) but never *how* to authenticate — that is always resolved from the environment at runtime.
+The Stem config files (e.g., `stem.yaml`) reference *what* to connect to (org name, repo list, API endpoints) but never *how* to authenticate — that is always resolved from the environment at runtime.
 
 ---
 
@@ -505,10 +505,11 @@ This starts the local MCP server. You can use it from GitHub Copilot CLI by addi
 {
   "mcpServers": {
     "stem": {
-     "type": "stdio",
-    "command": "stem",
-    "args": ["mcp"],
-    "tools": ["*"]
+      "type": "stdio",
+      "command": "stem",
+      "args": ["mcp"],
+      "tools": ["*"]
+    }
   }
 }
 ```

@@ -23,7 +23,7 @@
 
 - Use `pytest` as the test runner.
 - Write clear, focused unit tests for all new logic.
-- Run validation: `ruff format --check . && mypy app/ && ruff check app/ && pytest`
+- Run validation: `uv run ruff format --check . && uv run mypy app/ && uv run ruff check app/ && uv run pytest`
 
 ## When working with Mardkown files.
 
