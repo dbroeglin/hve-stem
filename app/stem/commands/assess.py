@@ -1,11 +1,12 @@
 """stem assess — evaluate repos against desired SDLC blueprints."""
 
 import asyncio
-from typing import Annotated
+from typing import Annotated, Any
 
 import typer
 from copilot import CopilotClient, MCPServerConfig, PermissionHandler
 from copilot.generated.session_events import SessionEvent, SessionEventType
+from copilot.types import SystemMessageReplaceConfig
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.panel import Panel
@@ -14,6 +15,110 @@ from rich.text import Text
 from stem.workspace import Workspace
 
 console = Console()
+
+# Maps built-in tool names to (color, icon) for display.
+_TOOL_STYLE: dict[str, tuple[str, str]] = {
+    "bash": ("yellow", "$"),
+    "shell": ("yellow", "$"),
+    "view": ("blue", "📄"),
+    "read_file": ("blue", "📄"),
+    "read": ("blue", "📄"),
+    "glob": ("blue", "🔍"),
+    "ls": ("blue", "📂"),
+    "report_intent": ("dim", "📋"),
+    "write_file": ("green", "✏️"),
+    "edit_file": ("green", "✏️"),
+}
+
+
+def _tool_detail(tool_name: str, mcp_server: str | None, args: Any) -> str:
+    """Return a Rich-markup detail string extracted from tool arguments."""
+    if not isinstance(args, dict):
+        return ""
+
+    name = tool_name.lower()
+    server = (mcp_server or "").lower()
+
+    # bash / shell — show the command, truncated
+    cmd: str = args.get("command") or args.get("cmd") or ""
+    if cmd and (name in ("bash", "shell") or "command" in args):
+        cmd = cmd.strip().replace("\n", "; ")
+        truncated = cmd[:100] + ("…" if len(cmd) > 100 else "")
+        return f"[yellow]$ {truncated}[/yellow]"
+
+    # file viewing / reading — show the path
+    if name in ("view", "read_file", "read", "ls", "glob"):
+        path: str = (
+            args.get("path") or args.get("file_path") or args.get("pattern") or ""
+        )
+        if path:
+            return f"[blue]{path}[/blue]"
+
+    # GitHub MCP tools — show owner/repo/path or search query
+    if server == "github" or "github" in name:
+        owner: str = args.get("owner", "")
+        repo: str = args.get("repo", "")
+        path_gh: str = args.get("path", "")
+        query: str = args.get("query") or args.get("q") or ""
+        issue_num = (
+            args.get("issue_number")
+            or args.get("number")
+            or args.get("pull_request_number")
+        )
+
+        if query:
+            q = str(query)
+            truncated_q = q[:70] + ("…" if len(q) > 70 else "")
+            return f"[dim]search:[/dim] [italic]{truncated_q}[/italic]"
+
+        if owner and repo:
+            ref = f"[bold]{owner}/{repo}[/bold]"
+            if path_gh:
+                ref += f"[dim]/{path_gh.lstrip('/')}[/dim]"
+            if issue_num:
+                ref += f"[dim] #{issue_num}[/dim]"
+            return ref
+
+    # generic fallback: first string-valued key worth showing
+    for key in ("path", "file", "url", "name", "query", "ref"):
+        val = args.get(key)
+        if val and isinstance(val, str):
+            return f"[dim]{val[:70] + ('…' if len(val) > 70 else '')}[/dim]"
+
+    return ""
+
+
+def _format_tool_line(event: SessionEvent) -> str:
+    """Build a Rich-markup string for a TOOL_EXECUTION_START event."""
+    data = event.data
+    tool_name: str = data.tool_name or "unknown"
+    mcp_server: str | None = data.mcp_server_name
+    mcp_tool: str | None = data.mcp_tool_name
+
+    # Display name: prefer MCP server + tool breakdown
+    if mcp_server and mcp_tool:
+        display = (
+            f"[bold magenta]{mcp_server}[/bold magenta]"
+            f"[dim]/[/dim]"
+            f"[cyan]{mcp_tool}[/cyan]"
+        )
+    elif mcp_server:
+        display = (
+            f"[bold magenta]{mcp_server}[/bold magenta]"
+            f"[dim]/[/dim]"
+            f"[cyan]{tool_name}[/cyan]"
+        )
+    else:
+        color, _icon = _TOOL_STYLE.get(tool_name.lower(), ("cyan", "⚙"))
+        display = f"[bold {color}]{tool_name}[/bold {color}]"
+
+    detail = _tool_detail(mcp_tool or tool_name, mcp_server, data.arguments)
+
+    line = f"  [dim]⚙ [/dim] {display}"
+    if detail:
+        line += f"  [dim]›[/dim]  {detail}"
+    return line
+
 
 SYSTEM_MESSAGE = """\
 You are HVE Stem — an expert SDLC assessment agent.
@@ -70,26 +175,6 @@ MCP_SERVERS: dict[str, MCPServerConfig] = {
 }
 
 
-def _build_system_message(ws: Workspace) -> str:
-    """Combine the base system message with workspace-discovered context."""
-    parts = [SYSTEM_MESSAGE]
-
-    if ws.agents:
-        parts.append("\n## Agent Definitions\n")
-        for agent in ws.agents:
-            parts.append(f"### {agent.name}\n{agent.body}\n")
-
-    if ws.skills:
-        parts.append("\n## Available Skills\n")
-        for skill in ws.skills:
-            header = f"### {skill.name}"
-            if skill.description:
-                header += f" — {skill.description}"
-            parts.append(f"{header}\n{skill.body}\n")
-
-    return "\n".join(parts)
-
-
 async def _run_assessment(
     repo: str,
     model: str,
@@ -113,24 +198,27 @@ async def _run_assessment(
     await client.start()
 
     try:
+        stem_dir = str(ws.root / "stem")
         session = await client.create_session(
             {
                 "model": model,
                 "on_permission_request": PermissionHandler.approve_all,
                 "mcp_servers": MCP_SERVERS,
-                "system_message": _build_system_message(ws),
+                "system_message": SystemMessageReplaceConfig(
+                    mode="replace", content=SYSTEM_MESSAGE
+                ),
+                "working_directory": stem_dir,
+                "skill_directories": [stem_dir + "/skills"],
             }
         )
 
         def _on_event(event: SessionEvent) -> None:
             if event.type == SessionEventType.ASSISTANT_REASONING:
-                _console.print(
-                    f"  [dim]💭 reasoning:[/dim] [italic]{event.data.content}[/italic]"
-                )
+                text = (event.data.content or "").strip()
+                if text:
+                    _console.print(f"  [dim italic]💭 {text}[/dim italic]")
             elif event.type == SessionEventType.TOOL_EXECUTION_START:
-                _console.print(
-                    f"  [dim]⚙  calling tool:[/dim] [cyan]{event.data.tool_name}[/cyan]"
-                )
+                _console.print(_format_tool_line(event))
 
         session.on(_on_event)
 
