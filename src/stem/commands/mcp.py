@@ -7,9 +7,8 @@ from typing import Annotated, Optional
 
 import typer
 from mcp.server.fastmcp import FastMCP
-from rich.console import Console
 
-from stem.session import load_agent_message, run_agent
+from stem.engine import run_assessment
 from stem.workspace import load_workspace
 
 _mcp = FastMCP(
@@ -41,21 +40,11 @@ async def assess_repo(
     from stem.cli import get_workspace
 
     ws = get_workspace()
-    system_message = load_agent_message(ws.root, "assessor")
-    _console = Console(stderr=True)
-    return await run_agent(
-        prompt=(
-            f"Assess the GitHub repository **{repo}**. "
-            "Use the available Microsoft Docs, WorkIQ and GitHub "
-            "tools to inspect the repo contents, workflows, "
-            "configuration files, and community health files. "
-            "Then produce the full SDLC assessment report."
-        ),
-        system_message=system_message,
+    return await run_assessment(
+        repo=repo,
+        ws=ws,
         model=model,
         timeout=timeout,
-        ws=ws,
-        output=_console,
     )
 
 

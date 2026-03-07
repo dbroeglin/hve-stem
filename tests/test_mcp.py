@@ -50,24 +50,27 @@ def test_assess_repo_missing_workspace() -> None:
 def test_assess_repo_missing_agent_file(tmp_path: Path) -> None:
     """assess_repo raises FileNotFoundError when assessor agent is absent."""
     ws = Workspace(root=tmp_path)
-    with patch("stem.cli.get_workspace", return_value=ws):
+    with (
+        patch("stem.cli.get_workspace", return_value=ws),
+        patch(
+            "stem.commands.mcp.run_assessment",
+            new_callable=AsyncMock,
+            side_effect=FileNotFoundError("Agent file not found"),
+        ),
+    ):
         with pytest.raises(FileNotFoundError, match="Agent file not found"):
             asyncio.run(assess_repo(repo="owner/repo"))
 
 
 def test_assess_repo_success(tmp_path: Path) -> None:
-    """assess_repo returns the Markdown report produced by run_agent."""
+    """assess_repo returns the Markdown report produced by run_assessment."""
     ws = Workspace(root=tmp_path)
     expected_report = "# Assessment Report\n\nAll checks passed."
 
     with (
         patch("stem.cli.get_workspace", return_value=ws),
         patch(
-            "stem.commands.mcp.load_agent_message",
-            return_value="You are an assessor.",
-        ),
-        patch(
-            "stem.commands.mcp.run_agent",
+            "stem.commands.mcp.run_assessment",
             new_callable=AsyncMock,
             return_value=expected_report,
         ),
@@ -78,24 +81,20 @@ def test_assess_repo_success(tmp_path: Path) -> None:
 
 
 def test_assess_repo_passes_model_and_timeout(tmp_path: Path) -> None:
-    """assess_repo forwards model and timeout to run_agent."""
+    """assess_repo forwards model and timeout to run_assessment."""
     ws = Workspace(root=tmp_path)
     mock_run = AsyncMock(return_value="report")
 
     with (
         patch("stem.cli.get_workspace", return_value=ws),
-        patch(
-            "stem.commands.mcp.load_agent_message",
-            return_value="system msg",
-        ),
-        patch("stem.commands.mcp.run_agent", mock_run),
+        patch("stem.commands.mcp.run_assessment", mock_run),
     ):
         asyncio.run(assess_repo(repo="org/repo", model="gpt-4o", timeout=60.0))
 
     call_kwargs = mock_run.call_args.kwargs
     assert call_kwargs["model"] == "gpt-4o"
     assert call_kwargs["timeout"] == 60.0
-    assert "org/repo" in call_kwargs["prompt"]
+    assert call_kwargs["repo"] == "org/repo"
 
 
 # -- mcp command --workdir wiring ------------------------------------------
