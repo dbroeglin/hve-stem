@@ -279,6 +279,18 @@ for engineering teams.
 | [Apache DevLake](https://devlake.apache.org/)                    | DORA metrics, PR statistics, CI/CD health          | `stem assess`              |
 | [Work IQ](https://workiq.com/)                                   | Retrospective transcripts, team sentiment & themes | `stem remediate` (planned) |
 
+### Copilot CLI SDK MCP configuration
+
+The file [`stem/mcp.json`](src/stem/data/stem/mcp.json) configures which MCP
+servers the **GitHub Copilot CLI SDK** has access to. Stem loads this file
+dynamically at runtime so the assessment engine can call external MCP servers
+(e.g. Microsoft Docs, Work IQ, Azure MCP) during `stem assess` runs. The
+default configuration is bundled with Stem and copied into the instance
+repository by `stem init`. Teams can customise their copy to add private MCP
+servers or remove unused ones — see
+[ADR-0007](docs/adr/adr-0007-externalized-mcp-server-configuration.md) for the
+full design rationale.
+
 ### Microsoft ecosystem story
 
 Stem leverages Microsoft products across the full assess-and-improve cycle:
