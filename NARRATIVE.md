@@ -69,7 +69,7 @@ All Stem state lives in a **Git repository** — human-readable, version-control
 
 | Format | Used for | Examples |
 | --- | --- | --- |
-| **Markdown** (primary) | Blueprints, policies, instructions, narrative docs, assessment reports | `blueprints/python-microservice.md`, `policies/code-review.md`, `reports/2026-02-assess.md` |
+| **Markdown** (primary) | Blueprints, policies, instructions, narrative docs, assessment reports | `blueprints/python-microservice.md`, `blueprints/code-review-policy.md`, `reports/2026-02-assess.md` |
 | **Markdown + frontmatter** | Linking related documents, adding metadata | YAML frontmatter for tags, relationships, timestamps |
 | **YAML** | Structured configuration, data-heavy settings | `stem.yaml` (project config, repo inventory), workflow definitions |
 | **JSON / CSV** | Tabular data, machine-readable exports | Assessment score history, metric exports |

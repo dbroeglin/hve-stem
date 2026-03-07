@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 
 import pytest
-
 from stem.session import load_agent_message, load_mcp_servers
 
 

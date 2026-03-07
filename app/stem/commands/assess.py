@@ -81,4 +81,3 @@ def assess(
     console.print(Markdown(report))
     console.print()
     console.print("[bold green]Assessment complete.[/bold green]")
-
