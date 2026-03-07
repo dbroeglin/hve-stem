@@ -6,3 +6,5 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+internal/
