@@ -12,4 +12,7 @@ src/stem/data/static/assets/
 src/stem/data/static/index.html
 src/stem/data/static/vite.svg
 
+# Playwright CLI cache
+/.playwright-cli/
+
 internal/
