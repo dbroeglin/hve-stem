@@ -36,6 +36,9 @@ and how do we enforce our standards?"*
 
 ## Architecture
 
+> For a detailed breakdown of components, data flows, and module boundaries see
+> [ARCHITECTURE.md](ARCHITECTURE.md).
+
 Stem uses a three-layer model. Only Layer 1 is part of this project:
 
 ```text
