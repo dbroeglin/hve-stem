@@ -25,7 +25,7 @@ _mcp = FastMCP(
 async def assess_repo(
     repo: str,
     model: str = "claude-sonnet-4.6",
-    timeout: float = 300.0,
+    timeout: float = 600.0,
 ) -> str:
     """Assess a GitHub repository against the desired SDLC blueprint.
 

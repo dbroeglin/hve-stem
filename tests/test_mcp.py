@@ -1,6 +1,7 @@
 """Tests for stem mcp — MCP server registration and assess_repo tool."""
 
 import asyncio
+import inspect
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
@@ -32,6 +33,11 @@ def test_assess_repo_tool_schema() -> None:
     assert "repo" in tool.inputSchema["required"]
     assert "model" in tool.inputSchema["properties"]
     assert "timeout" in tool.inputSchema["properties"]
+
+
+def test_assess_repo_default_timeout_is_600_seconds() -> None:
+    signature = inspect.signature(assess_repo)
+    assert signature.parameters["timeout"].default == 600.0
 
 
 # -- assess_repo tool behaviour -------------------------------------------
