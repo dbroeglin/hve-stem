@@ -67,7 +67,6 @@ graph TB
     subgraph External["External Services"]
         COPILOT["GitHub Copilot<br/>(via Copilot SDK)"]
         MCPEXT["External MCP Servers<br/>(GitHub, Docs, etc.)"]
-        GH["GitHub API"]
     end
 
     subgraph State["Instance Repository (Git)"]
@@ -80,13 +79,18 @@ graph TB
         REMED["Remediation State"]
     end
 
+    subgraph GITHUB["GitHub"]
+        direction TB
+        TARGET["Target Repo"]
+        GH["GitHub API"]
+    end
+
     CLI --> ENGINE
     MCP --> ENGINE
     WEB -->|"FastAPI + SSE"| ENGINE
     ENGINE --> SESSION
     ENGINE --> WS
     SESSION --> COPILOT
-    SESSION --> GH
     WS --> State
     COPILOT --> MCPEXT
     COPILOT --> MCP_JSON
@@ -95,6 +99,11 @@ graph TB
     AGENTS ~~~ MCP_JSON
     MCP_JSON ~~~ REPORTS
     REPORTS ~~~ REMED
+    ENGINE --> GH
+    MCPEXT --> GITHUB
+    GH ~~~ TARGET
+
+
 
     style Interfaces fill:#dbeafe,stroke:#3b82f6
     style Core fill:#dcfce7,stroke:#22c55e
