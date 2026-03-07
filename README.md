@@ -4,7 +4,7 @@
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![CI](https://img.shields.io/github/actions/workflow/status/dbroeglin/hve-stem/ci.yml?label=CI)
 
-**Control plane for agentic software development.**
+> **Control plane for agentic software development.**
 
 Stem sits above your agentic workflows and developer tools, providing a single
 surface to **bootstrap, govern, assess, and continuously improve** how your
@@ -75,9 +75,22 @@ implementation, and MCP + Web UI are built on top of the same core logic.
 | [`stem serve`](docs/commands/serve.md)         | Launch the web UI dashboard                                                              |
 | [`stem mcp`](docs/commands/mcp.md)             | Start an MCP server for coding-agent integration                                         |
 
-> **Auto-discovery:** The repository includes a root [`mcp.json`](mcp.json)
-> so compatible editors (VS Code, GitHub Copilot) detect the Stem MCP server
-> automatically when you open the project.
+### Using the MCP server from VS Code or Copilot CLI
+
+Add the following configuration to your coding agent to leverage Stem as a MCP server:
+
+```json
+{
+  "mcpServers": {
+    "stem": {
+      "type": "stdio",
+      "command": "stem",
+      "args": ["mcp"],
+      "tools": ["*"]
+    }
+  }
+}
+```
 
 ---
 
