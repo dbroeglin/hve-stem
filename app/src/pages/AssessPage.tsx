@@ -9,7 +9,9 @@ import {
   StateLabel,
   ActionMenu,
   ActionList,
+  IconButton,
 } from "@primer/react";
+import { ChevronDownIcon, ChevronRightIcon } from "@primer/octicons-react";
 import { BeakerIcon, RepoIcon } from "@primer/octicons-react";
 import { fetchTargets } from "../api/client";
 import { useAssess } from "../api/useAssess";
@@ -22,6 +24,7 @@ export function AssessPage(): React.ReactElement {
   const [targetsError, setTargetsError] = useState<string | null>(null);
   const { events, result, isRunning, error, run } = useAssess();
   const logEndRef = useRef<HTMLDivElement>(null);
+  const [logOpen, setLogOpen] = useState(true);
 
   useEffect(() => {
     fetchTargets()
@@ -131,8 +134,21 @@ export function AssessPage(): React.ReactElement {
 
       {(events.length > 0 || isRunning) && (
         <div className="gh-box">
-          <div className="gh-box-header">
+          <div
+            className="gh-box-header gh-box-header--clickable"
+            onClick={() => setLogOpen((prev) => !prev)}
+          >
             <Heading as="h3" className="gh-box-title">
+              <IconButton
+                aria-label={logOpen ? "Collapse event log" : "Expand event log"}
+                icon={logOpen ? ChevronDownIcon : ChevronRightIcon}
+                variant="invisible"
+                size="small"
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  setLogOpen((prev) => !prev);
+                }}
+              />
               {isRunning ? (
                 <span className="gh-box-title-with-status">
                   <Spinner size="small" />
@@ -143,10 +159,12 @@ export function AssessPage(): React.ReactElement {
               )}
             </Heading>
           </div>
-          <div className="gh-box-body gh-box-body--log">
-            <EventLog events={events} />
-            <div ref={logEndRef} />
-          </div>
+          {logOpen && (
+            <div className="gh-box-body gh-box-body--log">
+              <EventLog events={events} />
+              <div ref={logEndRef} />
+            </div>
+          )}
         </div>
       )}
 
@@ -157,7 +175,7 @@ export function AssessPage(): React.ReactElement {
               Assessment Report
             </Heading>
           </div>
-          <div className="gh-box-body">
+          <div className="gh-box-body gh-box-body--report">
             <MarkdownReport content={result} />
           </div>
         </div>

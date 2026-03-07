@@ -126,6 +126,20 @@ body,
   overflow-y: auto;
 }
 
+.gh-box-body--report {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.gh-box-header--clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.gh-box-header--clickable:hover {
+  background: var(--bgColor-neutral-muted, #eaeef2);
+}
+
 /* ───────── Assess form ───────── */
 .assess-form {
   display: flex;
