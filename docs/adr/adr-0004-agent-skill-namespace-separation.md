@@ -119,7 +119,7 @@ for Stem's own runtime. This approach was chosen because:
 
 ## Implementation Notes
 
-- **IMP-001**: The `load_workspace()` function in `app/stem/workspace.py`
+- **IMP-001**: The `load_workspace()` function in `src/stem/workspace.py`
   scans `stem/agents/` and `stem/skills/` for the Copilot SDK workdir, and
   `.github/agents/` for developer-facing agents. Both paths must be kept in
   sync with this ADR.

@@ -174,17 +174,17 @@ This stack was chosen because:
 ## Implementation Notes
 
 - **IMP-001**: The CLI entry point is `stem = "stem.cli:app"` in
-  `pyproject.toml`. All commands are registered in `app/stem/cli.py` via
+  `pyproject.toml`. All commands are registered in `src/stem/cli.py` via
   `app.command()`.
-- **IMP-002**: Core command logic lives in `app/stem/commands/<command>.py`.
+- **IMP-002**: Core command logic lives in `src/stem/commands/<command>.py`.
   Each command module exports a function that is registered on the Typer
   app. Both the CLI and MCP interfaces call the same underlying functions,
   ensuring parity.
-- **IMP-003**: The MCP server (`app/stem/commands/mcp.py`) wraps core
+- **IMP-003**: The MCP server (`src/stem/commands/mcp.py`) wraps core
   command functions with `@_mcp.tool()` decorators from `FastMCP`. Adding
   new MCP tools requires only a decorated async wrapper function.
 - **IMP-004**: The validation pipeline is:
-  `ruff format --check . && mypy app/ && ruff check app/ && pytest`.
+  `ruff format --check . && mypy src/ && ruff check src/ && pytest`.
   All four checks must pass before merging.
 
 ## References

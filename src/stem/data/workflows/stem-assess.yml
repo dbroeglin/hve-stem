@@ -20,7 +20,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install hve-stem
-        run: pip install hve-stem
+        run: uv tool install git+https://github.com/dbroeglin/hve-stem
 
       - name: Run assessments
         env:

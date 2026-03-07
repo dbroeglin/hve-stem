@@ -19,7 +19,7 @@ superseded_by: ""
 The `stem assess` command uses the Copilot SDK to create an agentic session
 that connects to multiple MCP servers (GitHub, Microsoft Docs, WorkIQ,
 Azure MCP). Previously, the MCP server configuration was hardcoded as a Python
-dictionary (`MCP_SERVERS`) directly in `app/stem/commands/assess.py`.
+dictionary (`MCP_SERVERS`) directly in `src/stem/commands/assess.py`.
 
 This caused several problems:
 
@@ -63,7 +63,7 @@ Key design choices:
   configuration and the Copilot SDK, making the format instantly recognizable
   to developers already familiar with MCP tooling.
 - **Bundled default** — a default `mcp.json` ships with Stem in
-  `app/stem/data/stem/mcp.json` and is copied into new instance repositories
+  `src/stem/data/stem/mcp.json` and is copied into new instance repositories
   by `stem init`.
 - **Runtime loading** — `assess.py` loads the file at runtime via
   `_load_mcp_servers(workspace_root)`, which reads and parses
@@ -121,7 +121,7 @@ Key design choices:
 ## Implementation Notes
 
 - **IMP-001**: `stem init` copies the default `mcp.json` from the bundled
-  `app/stem/data/stem/` directory into the new instance's `stem/` directory.
+  `src/stem/data/stem/` directory into the new instance's `stem/` directory.
 - **IMP-002**: `_load_mcp_servers()` in `assess.py` raises
   `FileNotFoundError` with a helpful message if `stem/mcp.json` is missing.
 - **IMP-003**: Existing instance repositories created before this change will

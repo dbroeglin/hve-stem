@@ -127,7 +127,7 @@ This approach was chosen because:
 ## Implementation Notes
 
 - **IMP-001**: `stem init` copies the bundled default blueprint from
-  `app/stem/data/blueprints/default.md` into the `blueprints/` directory
+  `src/stem/data/blueprints/default.md` into the `blueprints/` directory
   during instance initialisation.
 - **IMP-002**: The assessment agent should load all `*.md` files from
   `blueprints/` and use the `type:` front-matter field to categorise them.

@@ -4,7 +4,7 @@
 - Package manager: uv; `pyproject.toml` is the single source of truth for all project metadata, dependencies, and tool configurations.
 - Environment manager: uv. Use commands like `uv run` to execute within the virtual environment.
 - Dependencies: Runtime dependencies are in `[project.dependencies]`; dev tools (e.g., mypy, pytest, ruff) are in the `dev` group under `[dependency-groups]`. No `requirements.txt` files are used.
-- Layout: `app/stem/` for package code, `tests/` for pytest.
+- Layout: `src/stem/` for package code, `tests/` for pytest.
 - Builds: hatchling backend.
 - Entry point: `stem` CLI command via Typer (`stem.cli:app`).
 - The narrative for this application is in `NARRATIVE.md`. 
@@ -23,7 +23,7 @@
 
 - Use `pytest` as the test runner.
 - Write clear, focused unit tests for all new logic.
-- Run validation: `uv run ruff format --check . && uv run mypy app/ && uv run ruff check app/ && uv run pytest`
+- Run validation: `uv run ruff format --check . && uv run mypy src/ && uv run ruff check src/ && uv run pytest`
 
 ## When working with Markdown files.
 
