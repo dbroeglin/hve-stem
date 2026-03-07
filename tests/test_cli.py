@@ -26,8 +26,9 @@ def test_assess_command_exists() -> None:
 
 
 def test_serve_command_exists() -> None:
-    result = runner.invoke(app, ["serve"])
+    result = runner.invoke(app, ["serve", "--help"])
     assert result.exit_code == 0
+    assert "Launch the web UI" in result.output
 
 
 def test_mcp_command_exists() -> None:

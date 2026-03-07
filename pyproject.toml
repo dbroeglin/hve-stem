@@ -12,6 +12,8 @@ dependencies = [
     "github-copilot-sdk",
     "mcp>=1.26.0",
     "pyyaml",
+    "fastapi",
+    "uvicorn[standard]",
 ]
 
 [project.scripts]
@@ -25,7 +27,7 @@ build-backend = "hatchling.build"
 packages = ["src/stem"]
 
 [dependency-groups]
-dev = ["mypy", "pytest", "ruff"]
+dev = ["mypy", "pytest", "ruff", "types-pyyaml"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
