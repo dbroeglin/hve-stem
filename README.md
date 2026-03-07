@@ -68,7 +68,7 @@ implementation, and MCP + Web UI are built on top of the same core logic.
 ### Key commands
 
 | Command                                  | Purpose                                                                                  |
-|------------------------------------------|------------------------------------------------------------------------------------------||
+|------------------------------------------|------------------------------------------------------------------------------------------|
 | [`stem init`](docs/commands/init.md)           | Bootstrap a new project or onboard an existing repo with a Stem-managed SDLC blueprint   |
 | [`stem assess`](docs/commands/assess.md)       | Evaluate repos against the desired blueprint (maturity, health, drift detection)          |
 | [`stem remediate`](docs/commands/remediate.md) | Create GitHub issues for each assessment finding with contextual fix suggestions          |
@@ -272,10 +272,10 @@ Stem leverages Microsoft products across the full assess-and-improve cycle:
 
 ```text
 ┌──────────────────────────────────────────────────────────────────────┐
-│  GitHub Copilot SDK      AI engine powering assessments & reports   │
-│  GitHub API / Actions    Data source + CI/CD automation target      │
-│  Apache DevLake on Azure DORA & SDLC metrics at scale              │
-│  Work IQ                 Qualitative team signals from retros       │
+│  GitHub Copilot SDK      AI engine powering assessments & reports    │
+│  GitHub API / Actions    Data source + CI/CD automation target       │
+│  Apache DevLake on Azure DORA & SDLC metrics at scale                │
+│  Work IQ                 Qualitative team signals from retros        │
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
