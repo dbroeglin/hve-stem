@@ -1,9 +1,16 @@
 """stem mcp — start an MCP server for coding agent integration."""
 
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Annotated, Optional
+
+import typer
 from mcp.server.fastmcp import FastMCP
 from rich.console import Console
 
 from stem.session import load_agent_message, run_agent
+from stem.workspace import load_workspace
 
 _mcp = FastMCP(
     "stem",
@@ -52,6 +59,20 @@ async def assess_repo(
     )
 
 
-def mcp() -> None:
+def mcp(
+    workdir: Annotated[
+        Optional[Path],  # noqa: UP007, UP045
+        typer.Option(
+            "--workdir",
+            "-w",
+            help="Root of the Stem instance repository.",
+            envvar="STEM_WORKDIR",
+        ),
+    ] = None,
+) -> None:
     """Start an MCP server so Stem can be driven from coding agents."""
+    from stem.cli import set_workspace
+
+    resolved = (workdir or Path.cwd()).resolve()
+    set_workspace(load_workspace(resolved))
     _mcp.run()

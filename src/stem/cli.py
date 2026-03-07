@@ -22,7 +22,7 @@ app = typer.Typer(
 _workspace: Workspace | None = None
 
 # Commands that do not require a pre-existing workspace.
-_SKIP_WORKSPACE_COMMANDS = {"init"}
+_SKIP_WORKSPACE_COMMANDS = {"init", "mcp"}
 
 
 def get_workspace() -> Workspace:
@@ -31,6 +31,12 @@ def get_workspace() -> Workspace:
         msg = "Workspace not initialised — this is a bug."
         raise RuntimeError(msg)
     return _workspace
+
+
+def set_workspace(ws: Workspace) -> None:
+    """Override the module-level workspace (used by subcommands like ``mcp``)."""
+    global _workspace  # noqa: PLW0603
+    _workspace = ws
 
 
 def _version_callback(value: bool) -> None:  # noqa: FBT001

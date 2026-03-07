@@ -34,4 +34,8 @@ def test_serve_command_exists() -> None:
 def test_mcp_command_exists() -> None:
     result = runner.invoke(app, ["mcp", "--help"])
     assert result.exit_code == 0
-    assert "MCP" in result.output or "mcp" in result.output.lower()
+    assert "mcp" in result.output.lower()
+    assert (
+        "coding agents" in result.output.lower()
+        or "mcp server" in result.output.lower()
+    )

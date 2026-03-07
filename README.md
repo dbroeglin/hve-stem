@@ -10,6 +10,10 @@ uv tool install git+https://github.com/dbroeglin/hve-stem
 stem assess <owner/repo>
 ```
 
+## Documentation
+
+- [MCP Server for Coding Agents](docs/mcp.md) — configure and run the `stem mcp` stdio server.
+
 ## Development
 
 ### Prerequisites
