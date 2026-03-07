@@ -5,8 +5,10 @@ The single implementation that both CLI and web UI call.
 
 from __future__ import annotations
 
+import datetime
 from collections.abc import Callable
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Literal
 
 from copilot.types import PermissionRequest, PermissionRequestResult
@@ -32,6 +34,27 @@ class AssessEvent:
 
 
 EventCallback = Callable[[AssessEvent], None]
+
+def save_report(workspace_root: Path, repo: str, report: str) -> Path:
+    """Persist an assessment report to the stem instance repository.
+
+    The report is written to ``reports/<owner>/<repo>/<YYYY-MM-DD>.md``
+    under *workspace_root*.
+
+    Args:
+        workspace_root: Root of the Stem instance repository.
+        repo: Target repository in ``owner/repo`` format.
+        report: The assessment report Markdown content.
+
+    Returns:
+        The path to the written report file.
+    """
+    today = datetime.date.today().isoformat()
+    report_path = workspace_root / "reports" / repo / f"{today}.md"
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(report, encoding="utf-8")
+    return report_path
+
 
 ASSESS_PROMPT_TEMPLATE = (
     "Assess the GitHub repository **{repo}**. "
@@ -84,5 +107,12 @@ async def run_assessment(
         on_permission_request=_permission_handler,
     )
 
+    report_path = save_report(ws.root, repo, report)
+    emit(
+        AssessEvent(
+            type="status",
+            message=f"Report saved to {report_path.relative_to(ws.root)}",
+        )
+    )
     emit(AssessEvent(type="status", message="Assessment complete."))
     return report
