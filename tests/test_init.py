@@ -132,10 +132,21 @@ def test_scaffold_creates_mcp_json(tmp_path: Path) -> None:
     assert "github" in data["mcpServers"]
 
 
-def test_scaffold_fails_when_git_user_not_configured(tmp_path: Path) -> None:
+def test_scaffold_fails_when_git_user_not_configured(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """_scaffold raises typer.Exit when git user.name/user.email are unset."""
     dest = tmp_path / "inst"
     dest.mkdir()
+
+    # Clear env-var fallbacks so only git-config is consulted.
+    for var in (
+        "GIT_AUTHOR_NAME",
+        "GIT_AUTHOR_EMAIL",
+        "GIT_COMMITTER_NAME",
+        "GIT_COMMITTER_EMAIL",
+    ):
+        monkeypatch.delenv(var, raising=False)
 
     original_run = subprocess.run
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.resources
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -140,12 +141,20 @@ def _scaffold(
 
     # 8. git init + initial commit
     #    Pre-check: git requires user.name and user.email for commits.
+    #    Git also honours GIT_AUTHOR_NAME/GIT_COMMITTER_NAME and the
+    #    corresponding EMAIL env vars, so check those as fallbacks.
+    _env_fallbacks = {
+        "user.name": ("GIT_AUTHOR_NAME", "GIT_COMMITTER_NAME"),
+        "user.email": ("GIT_AUTHOR_EMAIL", "GIT_COMMITTER_EMAIL"),
+    }
     missing: list[str] = []
     for key in ("user.name", "user.email"):
         result = subprocess.run(  # noqa: S603, S607
             ["git", "config", key], capture_output=True, text=True
         )
-        if result.returncode != 0 or not result.stdout.strip():
+        has_config = result.returncode == 0 and result.stdout.strip()
+        has_env = any(os.environ.get(v) for v in _env_fallbacks[key])
+        if not has_config and not has_env:
             missing.append(key)
     if missing:
         console.print(
