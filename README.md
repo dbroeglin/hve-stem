@@ -1,5 +1,9 @@
 # HVE Stem
 
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
+![CI](https://img.shields.io/github/actions/workflow/status/dbroeglin/hve-stem/ci.yml?label=CI)
+
 **Control plane for agentic software development.**
 
 Stem sits above your agentic workflows and developer tools, providing a single
@@ -63,13 +67,17 @@ implementation, and MCP + Web UI are built on top of the same core logic.
 
 ### Key commands
 
-| Command          | Purpose                                                                                  |
-|------------------|------------------------------------------------------------------------------------------|
-| `stem init`      | Bootstrap a new project or onboard an existing repo with a Stem-managed SDLC blueprint   |
-| `stem assess`    | Evaluate repos against the desired blueprint (maturity, health, drift detection)          |
-| `stem remediate` | Create GitHub issues for each assessment finding with contextual fix suggestions          |
-| `stem serve`     | Launch the web UI dashboard                                                              |
-| `stem mcp`       | Start an MCP server for coding-agent integration                                         |
+| Command                                  | Purpose                                                                                  |
+|------------------------------------------|------------------------------------------------------------------------------------------||
+| [`stem init`](docs/commands/init.md)           | Bootstrap a new project or onboard an existing repo with a Stem-managed SDLC blueprint   |
+| [`stem assess`](docs/commands/assess.md)       | Evaluate repos against the desired blueprint (maturity, health, drift detection)          |
+| [`stem remediate`](docs/commands/remediate.md) | Create GitHub issues for each assessment finding with contextual fix suggestions          |
+| [`stem serve`](docs/commands/serve.md)         | Launch the web UI dashboard                                                              |
+| [`stem mcp`](docs/commands/mcp.md)             | Start an MCP server for coding-agent integration                                         |
+
+> **Auto-discovery:** The repository includes a root [`mcp.json`](mcp.json)
+> so compatible editors (VS Code, GitHub Copilot) detect the Stem MCP server
+> automatically when you open the project.
 
 ---
 
@@ -102,6 +110,10 @@ community health files, then produces a Markdown assessment report covering
 delivery performance, code health, collaboration processes, agentic maturity,
 and governance compliance.
 
+When configured, Stem can also query [Apache DevLake](https://devlake.apache.org/)
+for computed DORA metrics, PR statistics, and CI/CD health data — see
+[ADR-0010](docs/adr/adr-0010-devlake-as-metric-backend.md) for details.
+
 ### 4. Launch the web dashboard
 
 ```bash
@@ -116,8 +128,17 @@ visually.
 ## Documentation
 
 - [NARRATIVE.md](NARRATIVE.md) — full design narrative and assessment model
-- [MCP Server for Coding Agents](docs/mcp.md) — configure and run the `stem mcp` stdio server
 - [Architecture Decision Records](docs/adr/) — ADRs documenting key design choices
+
+### Command reference
+
+| Command                                  | Reference                                               |
+|------------------------------------------|---------------------------------------------------------|
+| [`stem init`](docs/commands/init.md)           | Arguments, flags, directory structure created            |
+| [`stem assess`](docs/commands/assess.md)       | Arguments, flags, output format, examples               |
+| [`stem remediate`](docs/commands/remediate.md) | Planned — issue creation behaviour                      |
+| [`stem serve`](docs/commands/serve.md)         | Flags, API endpoints, dev server setup                  |
+| [`stem mcp`](docs/commands/mcp.md)             | MCP server configuration and coding-agent integration   |
 
 ---
 
@@ -128,8 +149,7 @@ visually.
 | Tool       | Required for       | Install                                                                                                    |
 |------------|--------------------|------------------------------------------------------------------------------------------------------------|
 | **uv**     | Python env & deps  | [docs.astral.sh/uv](https://docs.astral.sh/uv/getting-started/installation/) or `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
-| **Node.js**| Frontend build only| [nodejs.org](https://nodejs.org/) (LTS recommended) — **not** needed at runtime                           |
-| **Playwright CLI** | Browser testing | `npm install -g @playwright/cli@latest`                                                              |
+| **Node.js**| Frontend build only| [nodejs.org](https://nodejs.org/) (LTS recommended) — **not** needed at runtime                           |                                                          |
 
 ### Install dependencies
 
@@ -230,6 +250,80 @@ dedicated cloud deployment target for the Stem application itself.
   no secrets are stored in Git.
 - **Org-level automation:** Use a GitHub App installation to provide scoped,
   rotatable tokens across multiple repos without personal credentials.
+
+---
+
+## Integrations
+
+Stem is designed to sit within the **Microsoft developer ecosystem**, combining
+GitHub, Azure, and Microsoft productivity tools into a unified improvement loop
+for engineering teams.
+
+| Integration                                                       | Signal provided                                    | Used by                    |
+|-------------------------------------------------------------------|----------------------------------------------------|----------------------------|
+| [GitHub Copilot SDK](https://github.com/github/copilot-sdk)      | AI-powered assessment & recommendations            | Core engine                |
+| [GitHub API](https://docs.github.com/en/rest)                    | Repo structure, workflows, Copilot settings        | `stem assess`              |
+| [Apache DevLake](https://devlake.apache.org/)                    | DORA metrics, PR statistics, CI/CD health          | `stem assess`              |
+| [Work IQ](https://workiq.com/)                                   | Retrospective transcripts, team sentiment & themes | `stem remediate` (planned) |
+
+### Microsoft ecosystem story
+
+Stem leverages Microsoft products across the full assess-and-improve cycle:
+
+```text
+┌──────────────────────────────────────────────────────────────────────┐
+│  GitHub Copilot SDK      AI engine powering assessments & reports   │
+│  GitHub API / Actions    Data source + CI/CD automation target      │
+│  Apache DevLake on Azure DORA & SDLC metrics at scale              │
+│  Work IQ                 Qualitative team signals from retros       │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+These products are **optional and composable** — Stem works with just a GitHub
+token, but each additional integration enriches the picture.
+
+### Apache DevLake on Azure
+
+DevLake is an open-source dev data platform that computes DORA metrics, PR
+statistics, CI/CD health, and issue tracking metrics from 15+ DevOps tools.
+Stem delegates commodity metric computation to DevLake rather than
+reimplementing it (see [ADR-0010](docs/adr/adr-0010-devlake-as-metric-backend.md)).
+
+For teams running on Azure, DevLake can be deployed as an
+[Azure Container Apps](https://learn.microsoft.com/en-us/azure/container-apps/)
+service or via [Azure Kubernetes Service (AKS)](https://learn.microsoft.com/en-us/azure/aks/),
+making it a managed part of the team's Azure infrastructure. This keeps the
+entire Stem data pipeline — from GitHub to DevLake to assessment — within
+the Microsoft cloud.
+
+```yaml
+# stem.yaml — point Stem at your Azure-hosted DevLake instance
+devlake:
+  enabled: true
+  api_url: "https://devlake.myteam.azurecontainerapps.io"
+  project_name: "my-team"
+```
+
+When no DevLake instance is configured, metric-dependent checks are
+gracefully skipped and Stem continues to run structural and agentic maturity
+checks using the GitHub API alone.
+
+### Work IQ + Stem remediation workflow
+
+Teams that run retrospectives through **Work IQ** can feed the meeting
+transcript into a remediation cycle alongside Stem's assessment results.
+Combining quantitative findings (assessment gaps, metric drift) with
+qualitative team insights (pain points, root causes surfaced in the retro)
+produces remediation proposals that reflect both *what* needs to change and
+*why* the team believes it matters.
+
+Planned workflow:
+
+1. Run `stem assess <repo>` to produce an assessment report.
+2. Export the retrospective transcript from Work IQ.
+3. Run `stem remediate <repo>` with the transcript as additional context.
+4. Stem creates GitHub issues that combine assessment findings with relevant
+   retro themes, giving each issue richer context and team-informed priority.
 
 ---
 

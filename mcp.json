@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "stem": {
+      "type": "stdio",
+      "command": "stem",
+      "args": ["mcp"],
+      "tools": ["*"]
+    }
+  }
+}
