@@ -12,6 +12,7 @@ from typing import Literal
 from copilot.types import PermissionRequest, PermissionRequestResult
 
 from stem.session import load_agent_message, run_agent
+from stem.tools import build_tools
 from stem.workspace import Workspace
 
 # ---------------------------------------------------------------------------
@@ -38,6 +39,11 @@ ASSESS_PROMPT_TEMPLATE = (
     "Use the available Microsoft Docs, WorkIQ and GitHub "
     "tools to inspect the repo contents, workflows, "
     "configuration files, and community health files. "
+    "If DevLake metric tools are available (get_deployment_frequency, "
+    "get_change_lead_time, etc.), call them to gather DORA and SDLC "
+    "metrics for the Delivery Performance and Collaboration dimensions. "
+    "Use the GitHub API tools (get_copilot_settings, get_branch_protection) "
+    "for Copilot and governance checks. "
     "Then produce the full SDLC assessment report."
 )
 
@@ -68,6 +74,7 @@ async def run_assessment(
 
     system_message = load_agent_message(ws.root, "assessor")
     prompt = ASSESS_PROMPT_TEMPLATE.format(repo=repo)
+    tools = build_tools(ws)
 
     def _permission_handler(
         request: PermissionRequest, invocation: dict[str, str]
@@ -82,6 +89,7 @@ async def run_assessment(
         ws=ws,
         on_event=emit,
         on_permission_request=_permission_handler,
+        tools=tools,
     )
 
     emit(AssessEvent(type="status", message="Assessment complete."))

@@ -60,7 +60,14 @@ def _render_stem_yaml(
     data["targets"] = [{"repo": t} for t in targets] if targets else []
 
     (dest / "stem.yaml").write_text(
-        yaml.dump(data, default_flow_style=False, sort_keys=False),
+        yaml.dump(data, default_flow_style=False, sort_keys=False)
+        + "\n"
+        + "# Optional: Connect to Apache DevLake for DORA and SDLC metrics.\n"
+        + "# See https://devlake.apache.org/ for setup instructions.\n"
+        + "# devlake:\n"
+        + "#   enabled: true\n"
+        + '#   api_url: "http://localhost:8080"\n'
+        + '#   project_name: "my-project"\n',
         encoding="utf-8",
     )
 

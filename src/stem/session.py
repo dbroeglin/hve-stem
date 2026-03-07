@@ -4,7 +4,7 @@ import json
 from collections.abc import Callable
 from pathlib import Path
 
-from copilot import CopilotClient, MCPServerConfig
+from copilot import CopilotClient, MCPServerConfig, Tool
 from copilot.generated.session_events import SessionEvent, SessionEventType
 from copilot.types import (
     PermissionRequest,
@@ -63,6 +63,7 @@ async def run_agent(
     ws: Workspace,
     on_permission_request: PermissionHandler,
     on_event: Callable[..., None] | None = None,
+    tools: list[Tool] | None = None,
 ) -> str:
     """Create a Copilot session and send a prompt.
 
@@ -79,6 +80,8 @@ async def run_agent(
             session.  The caller decides the approval policy.
         on_event: Optional callback receiving structured ``AssessEvent`` objects
             for each progress event (tool calls, reasoning).
+        tools: Optional list of custom tool functions (from ``@define_tool``)
+            to register on the Copilot session.
 
     Returns:
         The model's response text.
@@ -99,6 +102,7 @@ async def run_agent(
                 "model": model,
                 "on_permission_request": on_permission_request,
                 "mcp_servers": mcp_servers,
+                "tools": tools or [],
                 "system_message": SystemMessageReplaceConfig(
                     mode="replace", content=system_message
                 ),

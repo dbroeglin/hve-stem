@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from stem.workspace import Agent, Skill, Workspace, load_workspace
+from stem.workspace import Agent, DevLakeConfig, Skill, Workspace, load_workspace
 
 WORKSPACE_ROOT = Path(__file__).parent / "workspace"
 
@@ -90,3 +90,35 @@ def test_workspace_missing_skill_md(tmp_path: Path) -> None:
 
     ws = load_workspace(tmp_path)
     assert ws.skills == []
+
+
+def test_devlake_config_parsed(tmp_path: Path) -> None:
+    """A stem.yaml with a devlake section should populate devlake_config."""
+    (tmp_path / "stem.yaml").write_text(
+        "devlake:\n"
+        "  enabled: true\n"
+        '  api_url: "http://dl:9090"\n'
+        '  project_name: "my-proj"\n'
+    )
+    ws = load_workspace(tmp_path)
+    assert ws.devlake_config is not None
+    assert isinstance(ws.devlake_config, DevLakeConfig)
+    assert ws.devlake_config.enabled is True
+    assert ws.devlake_config.api_url == "http://dl:9090"
+    assert ws.devlake_config.project_name == "my-proj"
+
+
+def test_devlake_config_missing(tmp_path: Path) -> None:
+    """No devlake section means devlake_config is None."""
+    (tmp_path / "stem.yaml").write_text("targets: []\n")
+    ws = load_workspace(tmp_path)
+    assert ws.devlake_config is None
+
+
+def test_devlake_config_disabled(tmp_path: Path) -> None:
+    """enabled: false means devlake_config is None."""
+    (tmp_path / "stem.yaml").write_text(
+        "devlake:\n  enabled: false\n  api_url: http://dl\n"
+    )
+    ws = load_workspace(tmp_path)
+    assert ws.devlake_config is None

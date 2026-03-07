@@ -28,6 +28,15 @@ class Agent:
 
 
 @dataclass(frozen=True)
+class DevLakeConfig:
+    """Configuration for an Apache DevLake instance parsed from ``stem.yaml``."""
+
+    enabled: bool
+    api_url: str
+    project_name: str
+
+
+@dataclass(frozen=True)
 class Workspace:
     """Aggregated view of all discoverable artefacts in a workspace."""
 
@@ -35,6 +44,7 @@ class Workspace:
     skills: list[Skill] = field(default_factory=list)
     agents: list[Agent] = field(default_factory=list)
     targets: list[str] = field(default_factory=list)
+    devlake_config: DevLakeConfig | None = None
 
 
 def _parse_skill(skill_dir: Path) -> Skill | None:
@@ -173,7 +183,11 @@ def load_workspace(root: Path) -> Workspace:
                         agents.append(agent)
 
     return Workspace(
-        root=root, skills=skills, agents=agents, targets=_load_targets(root)
+        root=root,
+        skills=skills,
+        agents=agents,
+        targets=_load_targets(root),
+        devlake_config=_load_devlake_config(root),
     )
 
 
@@ -195,3 +209,25 @@ def _load_targets(root: Path) -> list[str]:
         elif isinstance(entry, str):
             repos.append(entry)
     return repos
+
+
+def _load_devlake_config(root: Path) -> DevLakeConfig | None:
+    """Read the optional ``devlake:`` section from ``stem.yaml``.
+
+    Returns ``None`` when the section is missing or ``enabled`` is false.
+    """
+    stem_yaml = root / "stem.yaml"
+    if not stem_yaml.is_file():
+        return None
+    data = yaml.safe_load(stem_yaml.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        return None
+    devlake = data.get("devlake")
+    if not isinstance(devlake, dict):
+        return None
+    enabled = bool(devlake.get("enabled", False))
+    if not enabled:
+        return None
+    api_url = str(devlake.get("api_url", "http://localhost:8080"))
+    project_name = str(devlake.get("project_name", ""))
+    return DevLakeConfig(enabled=True, api_url=api_url, project_name=project_name)

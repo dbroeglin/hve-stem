@@ -14,6 +14,7 @@ dependencies = [
     "pyyaml",
     "fastapi",
     "uvicorn[standard]",
+    "httpx>=0.27",
 ]
 
 [project.scripts]
@@ -28,7 +29,13 @@ packages = ["src/stem"]
 artifacts = ["src/stem/data/static/**"]
 
 [dependency-groups]
-dev = ["mypy", "pytest", "ruff", "types-pyyaml"]
+dev = [
+    "mypy",
+    "pytest",
+    "pytest-asyncio",
+    "ruff",
+    "types-pyyaml",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
