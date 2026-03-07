@@ -232,21 +232,22 @@ FastAPI backend to the React frontend:
 sequenceDiagram
     participant Browser as React App
     participant FastAPI as FastAPI Backend
-    participant Engine as Assessment Engine
-    participant Copilot as Copilot SDK
+    participant Engine as Agentic Engine
 
     Browser->>FastAPI: POST /api/assess?repo=owner/repo
     FastAPI-->>Browser: { job_id: "uuid" }
     FastAPI->>Engine: asyncio.create_task(run_assessment)
 
+    create participant Copilot as Copilot SDK
+    Engine ->> Copilot: create_session
     Browser->>FastAPI: GET /api/assess/{job_id}/stream
     Note over Browser,FastAPI: SSE connection opened
 
     loop During assessment
         Engine->>FastAPI: on_event(AssessEvent)
         FastAPI-->>Browser: data: {"type":"status","message":"..."}
-        Engine->>Copilot: Agent tool calls
-        Copilot-->>Engine: Tool results
+        Engine->>Copilot: send_and_wait
+        Copilot-->>Engine: response
         Engine->>FastAPI: on_event(AssessEvent)
         FastAPI-->>Browser: data: {"type":"tool","tool":"..."}
     end
