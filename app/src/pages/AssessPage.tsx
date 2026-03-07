@@ -12,7 +12,7 @@ import {
   IconButton,
 } from "@primer/react";
 import { ChevronDownIcon, ChevronRightIcon } from "@primer/octicons-react";
-import { BeakerIcon, RepoIcon } from "@primer/octicons-react";
+import { BeakerIcon, RepoIcon, LinkExternalIcon } from "@primer/octicons-react";
 import { fetchTargets } from "../api/client";
 import { useAssess } from "../api/useAssess";
 import { EventLog } from "../components/EventLog";
@@ -170,10 +170,22 @@ export function AssessPage(): React.ReactElement {
 
       {result && (
         <div className="gh-box">
-          <div className="gh-box-header">
+          <div className="gh-box-header gh-box-header--spaced">
             <Heading as="h3" className="gh-box-title">
               Assessment Report
             </Heading>
+            <Button
+              as="a"
+              href="https://localhost:7000/report"
+              target="_blank"
+              rel="noopener noreferrer"
+              size="small"
+              variant="primary"
+              className="btn-subtle-primary"
+              trailingVisual={LinkExternalIcon}
+            >
+              Open Report
+            </Button>
           </div>
           <div className="gh-box-body gh-box-body--report">
             <MarkdownReport content={result} />

@@ -78,7 +78,7 @@ implementation, and MCP + Web UI are built on top of the same core logic.
 | [`stem serve`](docs/commands/serve.md)         | Launch the web UI dashboard                                                              |
 | [`stem mcp`](docs/commands/mcp.md)             | Start an MCP server for coding-agent integration                                         |
 
-### Using the MCP server from VS Code or Copilot CLI
+### Using the Stem as an MCP server from VS Code or Copilot CLI
 
 Add the following configuration to your coding agent to leverage Stem as a MCP server:
 

@@ -22,4 +22,5 @@ For each area, assign a maturity level:
 Finish with a prioritised list of **recommended next steps** the team
 should take to improve their SDLC posture.
 
-Format your entire response as Markdown.
+Format your entire response as Markdown only without any additional commentary or explanation. 
+Use headings, bullet points, tables and emojis to enhance readability.

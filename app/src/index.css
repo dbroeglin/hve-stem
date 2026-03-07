@@ -140,6 +140,21 @@ body,
   background: var(--bgColor-neutral-muted, #eaeef2);
 }
 
+.gh-box-header--spaced {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-subtle-primary {
+  opacity: 0.85;
+  font-size: 12px !important;
+}
+
+.btn-subtle-primary:hover {
+  opacity: 1;
+}
+
 /* ───────── Assess form ───────── */
 .assess-form {
   display: flex;
