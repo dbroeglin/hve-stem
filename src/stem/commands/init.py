@@ -139,6 +139,25 @@ def _scaffold(
         shutil.copy2(gitignore_src, dest / ".gitignore")
 
     # 8. git init + initial commit
+    #    Pre-check: git requires user.name and user.email for commits.
+    missing: list[str] = []
+    for key in ("user.name", "user.email"):
+        result = subprocess.run(  # noqa: S603, S607
+            ["git", "config", key], capture_output=True, text=True
+        )
+        if result.returncode != 0 or not result.stdout.strip():
+            missing.append(key)
+    if missing:
+        console.print(
+            f"[bold red]Error:[/bold red] Git is not fully configured — "
+            f"{' and '.join(missing)} "
+            f"{'is' if len(missing) == 1 else 'are'} not set.\n"
+            "Please configure them before running 'stem init':\n\n"
+            '  git config --global user.name "Your Name"\n'
+            '  git config --global user.email "you@example.com"'
+        )
+        raise typer.Exit(code=1)
+
     subprocess.run(["git", "init"], cwd=dest, check=True, capture_output=True)  # noqa: S603, S607
     subprocess.run(["git", "add", "."], cwd=dest, check=True, capture_output=True)  # noqa: S603, S607
     subprocess.run(  # noqa: S603, S607

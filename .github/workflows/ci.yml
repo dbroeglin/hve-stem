@@ -38,7 +38,6 @@ jobs:
           GIT_AUTHOR_EMAIL: ci@test
           GIT_COMMITTER_NAME: CI
           GIT_COMMITTER_EMAIL: ci@test
-          NO_COLOR: "1"
 
   frontend:
     name: Frontend checks

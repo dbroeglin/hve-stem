@@ -108,6 +108,8 @@ def test_assess_repo_passes_model_and_timeout(tmp_path: Path) -> None:
 
 def test_mcp_command_accepts_workdir_option() -> None:
     """The mcp CLI command should show --workdir in its help text."""
+    import re
+
     from typer.testing import CliRunner
 
     from stem.cli import app
@@ -115,7 +117,9 @@ def test_mcp_command_accepts_workdir_option() -> None:
     runner = CliRunner()
     result = runner.invoke(app, ["mcp", "--help"])
     assert result.exit_code == 0
-    assert "--workdir" in result.output
+    # Strip ANSI escape codes — Rich emits them even inside CliRunner.
+    plain = re.sub(r"\x1b\[[0-9;]*m", "", result.output)
+    assert "--workdir" in plain
 
 
 def test_mcp_command_sets_workspace_from_workdir(tmp_path: Path) -> None:

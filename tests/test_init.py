@@ -1,8 +1,12 @@
 """Tests for stem init — instance repository scaffolding."""
 
 import json
+import subprocess
 from pathlib import Path
+from unittest.mock import patch
 
+import pytest
+import typer
 import yaml
 
 from stem.commands.init import _scaffold
@@ -126,3 +130,21 @@ def test_scaffold_creates_mcp_json(tmp_path: Path) -> None:
     data = json.loads(mcp_json.read_text())
     assert "mcpServers" in data
     assert "github" in data["mcpServers"]
+
+
+def test_scaffold_fails_when_git_user_not_configured(tmp_path: Path) -> None:
+    """_scaffold raises typer.Exit when git user.name/user.email are unset."""
+    dest = tmp_path / "inst"
+    dest.mkdir()
+
+    original_run = subprocess.run
+
+    def fake_run(cmd: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        if cmd[:2] == ["git", "config"] and cmd[2] in ("user.name", "user.email"):
+            return subprocess.CompletedProcess(cmd, returncode=1, stdout="", stderr="")
+        return original_run(cmd, **kwargs)
+
+    with patch("stem.commands.init.subprocess.run", side_effect=fake_run):
+        with pytest.raises(typer.Exit) as exc_info:
+            _scaffold(dest, targets=[], name="inst")
+        assert exc_info.value.exit_code == 1
