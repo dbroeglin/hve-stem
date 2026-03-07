@@ -147,15 +147,18 @@ body {
 }
 
 .event-line {
-  display: inline-flex;
-  align-items: center;
+  display: flex;
+  align-items: baseline;
   gap: 8px;
   flex-wrap: wrap;
+  min-height: 24px;
+  line-height: 20px;
 }
 
 .event-label {
   font-size: 12px;
   flex-shrink: 0;
+  vertical-align: baseline;
 }
 
 .event-tool-name {

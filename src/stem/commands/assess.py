@@ -9,9 +9,71 @@ from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.text import Text
 
-from stem.engine import run_assessment
+from stem.engine import AssessEvent, run_assessment
 
 console = Console()
+
+# ---------------------------------------------------------------------------
+# Rich formatting helpers for CLI display
+# ---------------------------------------------------------------------------
+
+_TOOL_STYLE: dict[str, str] = {
+    "bash": "yellow",
+    "shell": "yellow",
+    "view": "blue",
+    "read_file": "blue",
+    "read": "blue",
+    "glob": "blue",
+    "ls": "blue",
+    "report_intent": "dim",
+    "write_file": "green",
+    "edit_file": "green",
+}
+
+_PERMISSION_KIND_STYLE: dict[str, str] = {
+    "shell": "yellow",
+    "write": "green",
+    "read": "blue",
+    "mcp": "magenta",
+    "url": "dim",
+    "custom-tool": "cyan",
+}
+
+
+def _print_event(event: AssessEvent) -> None:
+    """Render an ``AssessEvent`` to the console."""
+    if event.type == "status":
+        console.print(f"  [bold]{event.message}[/bold]")
+    elif event.type == "reasoning":
+        console.print(f"  [dim italic]💭 {event.message}[/dim italic]")
+    elif event.type == "tool":
+        tool = event.tool
+        # Format MCP tools as server/tool with colour
+        if "/" in tool:
+            server, tool_name = tool.split("/", 1)
+            display = (
+                f"[bold magenta]{server}[/bold magenta]"
+                f"[dim]/[/dim]"
+                f"[cyan]{tool_name}[/cyan]"
+            )
+        else:
+            color = _TOOL_STYLE.get(tool.lower(), "cyan")
+            display = f"[bold {color}]{tool}[/bold {color}]"
+        line = f"  [dim]⚙ [/dim] {display}"
+        if event.detail:
+            line += f"  [dim]›[/dim]  [dim]{event.detail}[/dim]"
+        console.print(line)
+    elif event.type == "permission":
+        if event.kind == "mcp":
+            return  # MCP permissions already shown via tool events
+        color = _PERMISSION_KIND_STYLE.get(event.kind, "cyan")
+        kind_display = f"[bold {color}]{event.kind}[/bold {color}]"
+        line = f"  [dim]🔐 [/dim] [bold green]✓[/bold green]  {kind_display}"
+        if event.detail:
+            line += f"  [dim]›[/dim]  [dim]{event.detail}[/dim]"
+        console.print(line)
+    elif event.type == "error":
+        console.print(f"  [bold red]Error:[/bold red] {event.message}")
 
 
 def assess(
@@ -61,6 +123,7 @@ def assess(
                 ws=ws,
                 model=model,
                 timeout=timeout,
+                on_event=_print_event,
             )
         )
     except Exception as exc:
