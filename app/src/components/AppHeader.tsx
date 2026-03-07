@@ -1,5 +1,5 @@
 import { UnderlineNav } from "@primer/react";
-import { MarkGithubIcon, BeakerIcon, ZapIcon } from "@primer/octicons-react";
+import { BeakerIcon, ZapIcon } from "@primer/octicons-react";
 import { useLocation, useNavigate } from "react-router";
 
 export function AppHeader(): React.ReactElement {
@@ -18,7 +18,6 @@ export function AppHeader(): React.ReactElement {
           }}
           className="app-header-brand"
         >
-          <MarkGithubIcon size={32} />
           HVE Stem
         </a>
       </header>
