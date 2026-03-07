@@ -75,6 +75,22 @@ def test_scaffold_seeds_target(tmp_path: Path) -> None:
     assert data["targets"][0]["repo"] == "my-org/api-service"
 
 
+def test_scaffold_seeds_multiple_targets(tmp_path: Path) -> None:
+    dest = tmp_path / "inst"
+    dest.mkdir()
+    _scaffold(
+        dest,
+        targets=["my-org/api-service", "my-org/web-app", "my-org/infra"],
+        name="inst",
+    )
+
+    data = yaml.safe_load((dest / "stem.yaml").read_text())
+    assert len(data["targets"]) == 3
+    assert data["targets"][0]["repo"] == "my-org/api-service"
+    assert data["targets"][1]["repo"] == "my-org/web-app"
+    assert data["targets"][2]["repo"] == "my-org/infra"
+
+
 def test_scaffold_records_blueprint_source(tmp_path: Path) -> None:
     dest = tmp_path / "inst"
     dest.mkdir()

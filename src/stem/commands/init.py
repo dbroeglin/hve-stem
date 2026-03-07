@@ -178,10 +178,10 @@ def _scaffold(
 
 
 def init(
-    repo: Annotated[
-        Optional[str],  # noqa: UP007, UP045
+    repos: Annotated[
+        Optional[list[str]],  # noqa: UP007, UP045
         typer.Argument(
-            help="Optional target repo to seed (owner/repo).",
+            help="Target repos to seed (owner/repo). May specify multiple.",
         ),
     ] = None,
     blueprint: Annotated[
@@ -211,9 +211,7 @@ def init(
         )
         raise typer.Exit(code=1)
 
-    targets: list[str] = []
-    if repo:
-        targets.append(repo)
+    targets: list[str] = list(repos) if repos else []
 
     blueprint_source: dict[str, str] | None = None
     if blueprint:
