@@ -16,12 +16,6 @@ export interface ToolEvent {
   detail: string;
 }
 
-export interface PermissionEvent {
-  type: "permission";
-  kind: string;
-  detail: string;
-}
-
 export interface ErrorEvent {
   type: "error";
   message: string;
@@ -37,6 +31,5 @@ export type AssessEvent =
   | StatusEvent
   | ReasoningEvent
   | ToolEvent
-  | PermissionEvent
   | ErrorEvent
   | DoneEvent;

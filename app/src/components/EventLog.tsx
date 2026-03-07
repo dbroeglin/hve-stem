@@ -2,7 +2,6 @@ import { Timeline, Label } from "@primer/react";
 import {
   GearIcon,
   CommentIcon,
-  ShieldCheckIcon,
   InfoIcon,
   AlertIcon,
 } from "@primer/octicons-react";
@@ -20,12 +19,6 @@ function eventIcon(event: AssessEvent): React.ReactElement {
       return (
         <Timeline.Badge>
           <CommentIcon />
-        </Timeline.Badge>
-      );
-    case "permission":
-      return (
-        <Timeline.Badge>
-          <ShieldCheckIcon />
         </Timeline.Badge>
       );
     case "status":
@@ -70,18 +63,6 @@ function eventContent(event: AssessEvent): React.ReactElement {
             thinking
           </Label>
           <span className="event-reasoning">{event.message}</span>
-        </span>
-      );
-    case "permission":
-      return (
-        <span className="event-line">
-          <Label variant="success" className="event-label">
-            permission
-          </Label>
-          <code>{event.kind}</code>
-          {event.detail && (
-            <span className="event-detail">{event.detail}</span>
-          )}
         </span>
       );
     case "status":
