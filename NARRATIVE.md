@@ -449,11 +449,11 @@ Blueprints are written in **plain Markdown with YAML frontmatter** and are desig
 | Tool | Role |
 | --- | --- |
 | **FastAPI** | Backend API for the web UI |
-| **Next.js** | Frontend web application |
+| **React + Vite** | Frontend web application (with @primer/react design system) |
 | **FastMCP** | MCP server implementation (for `stem mcp`) |
 
 **Packaging Logistics:**
-To simplify distribution, the Next.js frontend will be built as a static HTML export. These static assets will be bundled directly into the Python package. When a user runs `stem serve`, FastAPI will serve these static files alongside the API routes, ensuring users only need to install a single Python package without requiring a separate Node.js runtime.
+To simplify distribution, the React frontend is built with Vite and output as static assets directly into the Python package. When a user runs `stem serve`, FastAPI serves these static files alongside the API routes, ensuring users only need to install a single Python package without requiring a separate Node.js runtime.
 
 ### Developer Experience
 
