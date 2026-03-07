@@ -302,18 +302,19 @@ statistics, CI/CD health, and issue tracking metrics from 15+ DevOps tools.
 Stem delegates commodity metric computation to DevLake rather than
 reimplementing it (see [ADR-0010](docs/adr/adr-0010-devlake-as-metric-backend.md)).
 
-For teams running on Azure, DevLake can be deployed as an
+For teams running on Azure, DevLake can be deployed locally as Docker Compose, as an
 [Azure Container Apps](https://learn.microsoft.com/en-us/azure/container-apps/)
 service or via [Azure Kubernetes Service (AKS)](https://learn.microsoft.com/en-us/azure/aks/),
-making it a managed part of the team's Azure infrastructure. This keeps the
-entire Stem data pipeline — from GitHub to DevLake to assessment — within
-the Microsoft cloud.
+making it a managed part of the team's Azure infrastructure. 
+
+Follow the [DevLake deployment guide](https://devlake.apache.org/docs/GettingStarted/QuickStart) 
+to set up your instance, then point Stem at it through the following configuration in `stem.yaml`:
 
 ```yaml
 # stem.yaml — point Stem at your Azure-hosted DevLake instance
 devlake:
   enabled: true
-  api_url: "https://devlake.myteam.azurecontainerapps.io"
+  api_url: "http://localhost:8080"
   project_name: "my-team"
 ```
 
