@@ -47,7 +47,7 @@ function eventContent(event: AssessEvent): React.ReactElement {
     case "tool":
       return (
         <span className="event-line">
-          <Label variant="accent" className="event-label">
+          <Label variant="accent" className="event-label event-label--tool">
             tool
           </Label>
           <code className="event-tool-name">{event.tool}</code>
@@ -59,7 +59,7 @@ function eventContent(event: AssessEvent): React.ReactElement {
     case "reasoning":
       return (
         <span className="event-line">
-          <Label variant="secondary" className="event-label">
+          <Label variant="secondary" className="event-label event-label--thinking">
             thinking
           </Label>
           <span className="event-reasoning">{event.message}</span>
@@ -68,14 +68,14 @@ function eventContent(event: AssessEvent): React.ReactElement {
     case "status":
       return (
         <span className="event-line">
-          <Label className="event-label">status</Label>
+          <Label className="event-label event-label--status">status</Label>
           <span>{event.message}</span>
         </span>
       );
     case "error":
       return (
         <span className="event-line">
-          <Label variant="danger" className="event-label">
+          <Label variant="danger" className="event-label event-label--error">
             error
           </Label>
           <span className="event-error">{event.message}</span>

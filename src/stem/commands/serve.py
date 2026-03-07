@@ -44,8 +44,6 @@ async def _run_assess_job(job_id: str, repo: str, model: str) -> None:
             entry["tool"] = event.tool
         if event.detail:
             entry["detail"] = event.detail
-        if event.kind:
-            entry["kind"] = event.kind
         job["events"].append(entry)
 
     try:

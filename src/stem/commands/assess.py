@@ -30,15 +30,6 @@ _TOOL_STYLE: dict[str, str] = {
     "edit_file": "green",
 }
 
-_PERMISSION_KIND_STYLE: dict[str, str] = {
-    "shell": "yellow",
-    "write": "green",
-    "read": "blue",
-    "mcp": "magenta",
-    "url": "dim",
-    "custom-tool": "cyan",
-}
-
 
 def _print_event(event: AssessEvent) -> None:
     """Render an ``AssessEvent`` to the console."""
@@ -60,15 +51,6 @@ def _print_event(event: AssessEvent) -> None:
             color = _TOOL_STYLE.get(tool.lower(), "cyan")
             display = f"[bold {color}]{tool}[/bold {color}]"
         line = f"  [dim]⚙ [/dim] {display}"
-        if event.detail:
-            line += f"  [dim]›[/dim]  [dim]{event.detail}[/dim]"
-        console.print(line)
-    elif event.type == "permission":
-        if event.kind == "mcp":
-            return  # MCP permissions already shown via tool events
-        color = _PERMISSION_KIND_STYLE.get(event.kind, "cyan")
-        kind_display = f"[bold {color}]{event.kind}[/bold {color}]"
-        line = f"  [dim]🔐 [/dim] [bold green]✓[/bold green]  {kind_display}"
         if event.detail:
             line += f"  [dim]›[/dim]  [dim]{event.detail}[/dim]"
         console.print(line)

@@ -49,6 +49,11 @@ def load_agent_message(workspace_root: Path, agent_name: str) -> str:
     return agent_file.read_text(encoding="utf-8")
 
 
+PermissionHandler = Callable[
+    [PermissionRequest, dict[str, str]], PermissionRequestResult
+]
+
+
 async def run_agent(
     *,
     prompt: str,
@@ -56,6 +61,7 @@ async def run_agent(
     model: str,
     timeout: float,
     ws: Workspace,
+    on_permission_request: PermissionHandler,
     on_event: Callable[..., None] | None = None,
 ) -> str:
     """Create a Copilot session and send a prompt.
@@ -69,8 +75,10 @@ async def run_agent(
         model: Copilot model identifier.
         timeout: Seconds to wait for the session to respond.
         ws: Workspace containing discovered agents and skills.
+        on_permission_request: Permission callback passed to the Copilot
+            session.  The caller decides the approval policy.
         on_event: Optional callback receiving structured ``AssessEvent`` objects
-            for each progress event (tool calls, reasoning, permissions).
+            for each progress event (tool calls, reasoning).
 
     Returns:
         The model's response text.
@@ -86,20 +94,10 @@ async def run_agent(
         stem_dir = str(ws.root / "stem")
         mcp_servers = load_mcp_servers(ws.root)
 
-        def _permission_handler(
-            request: PermissionRequest, invocation: dict[str, str]
-        ) -> PermissionRequestResult:
-            kind_str: str = request.get("kind") or "unknown"
-            cmd = invocation.get("command") or invocation.get("cmd") or ""
-            tool_name = invocation.get("tool_name") or invocation.get("name") or ""
-            detail = cmd[:120] if cmd else tool_name
-            _emit(AssessEvent(type="permission", kind=kind_str, detail=detail))
-            return PermissionRequestResult(kind="approved")
-
         session = await client.create_session(
             {
                 "model": model,
-                "on_permission_request": _permission_handler,
+                "on_permission_request": on_permission_request,
                 "mcp_servers": mcp_servers,
                 "system_message": SystemMessageReplaceConfig(
                     mode="replace", content=system_message

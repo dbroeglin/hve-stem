@@ -16,6 +16,7 @@
 - The UI should follow Primer's design tokens and best practices for accessibility and responsiveness. 
 - The UI should look good in both light and dark modes without custom theming.
 - The UI should look similar to GitHub.com in its look and feel, using Primer components and styles.
+- Use the docuemntation for `@primer/react` as the primary reference for UI implementation: https://primer.style/product/
 
 ## Code style
 

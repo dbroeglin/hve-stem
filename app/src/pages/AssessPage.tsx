@@ -6,7 +6,7 @@ import {
   Text,
   Heading,
   FormControl,
-  Label,
+  StateLabel,
   ActionMenu,
   ActionList,
 } from "@primer/react";
@@ -52,7 +52,9 @@ export function AssessPage(): React.ReactElement {
           <Heading as="h2" className="page-title">
             Assessment
           </Heading>
-          {isRunning && <Label variant="attention">Running</Label>}
+          {isRunning && (
+            <StateLabel status="issueOpened">Running</StateLabel>
+          )}
         </div>
         <Text as="p" className="page-description">
           Evaluate a GitHub repository against the desired SDLC blueprint. The
@@ -109,8 +111,11 @@ export function AssessPage(): React.ReactElement {
             <Button
               type="submit"
               variant="primary"
-              disabled={isRunning || !repo.trim()}
-              leadingVisual={isRunning ? Spinner : BeakerIcon}
+              size="large"
+              disabled={!repo.trim()}
+              loading={isRunning}
+              leadingVisual={BeakerIcon}
+              className="assess-form__submit"
             >
               {isRunning ? "Running\u2026" : "Run Assessment"}
             </Button>

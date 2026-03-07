@@ -9,6 +9,8 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Literal
 
+from copilot.types import PermissionRequest, PermissionRequestResult
+
 from stem.session import load_agent_message, run_agent
 from stem.workspace import Workspace
 
@@ -16,7 +18,7 @@ from stem.workspace import Workspace
 # Event types emitted during an assessment
 # ---------------------------------------------------------------------------
 
-EventType = Literal["status", "reasoning", "tool", "permission", "error"]
+EventType = Literal["status", "reasoning", "tool", "error"]
 
 
 @dataclass
@@ -27,7 +29,6 @@ class AssessEvent:
     message: str = ""
     tool: str = ""
     detail: str = ""
-    kind: str = ""
 
 
 EventCallback = Callable[[AssessEvent], None]
@@ -68,6 +69,11 @@ async def run_assessment(
     system_message = load_agent_message(ws.root, "assessor")
     prompt = ASSESS_PROMPT_TEMPLATE.format(repo=repo)
 
+    def _permission_handler(
+        request: PermissionRequest, invocation: dict[str, str]
+    ) -> PermissionRequestResult:
+        return PermissionRequestResult(kind="approved")
+
     report = await run_agent(
         prompt=prompt,
         system_message=system_message,
@@ -75,6 +81,7 @@ async def run_assessment(
         timeout=timeout,
         ws=ws,
         on_event=emit,
+        on_permission_request=_permission_handler,
     )
 
     emit(AssessEvent(type="status", message="Assessment complete."))
