@@ -1,6 +1,5 @@
-import { Header } from "@primer/react";
 import { UnderlineNav } from "@primer/react";
-import { BeakerIcon, ZapIcon } from "@primer/octicons-react";
+import { MarkGithubIcon, BeakerIcon, ZapIcon } from "@primer/octicons-react";
 import { useLocation, useNavigate } from "react-router";
 
 export function AppHeader(): React.ReactElement {
@@ -10,20 +9,19 @@ export function AppHeader(): React.ReactElement {
 
   return (
     <>
-      <Header>
-        <Header.Item full>
-          <Header.Link
-            href="/"
-            onClick={(e: React.MouseEvent) => {
-              e.preventDefault();
-              navigate("/assess");
-            }}
-            className="app-header-title"
-          >
-            HVE Stem
-          </Header.Link>
-        </Header.Item>
-      </Header>
+      <header className="app-header">
+        <a
+          href="/"
+          onClick={(e: React.MouseEvent) => {
+            e.preventDefault();
+            navigate("/assess");
+          }}
+          className="app-header-brand"
+        >
+          <MarkGithubIcon size={32} />
+          HVE Stem
+        </a>
+      </header>
       <div className="underline-nav-container">
         <UnderlineNav aria-label="Main navigation">
           <UnderlineNav.Item

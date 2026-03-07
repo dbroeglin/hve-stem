@@ -28,24 +28,33 @@ body,
   width: 100%;
 }
 
-/* ───────── Header brand ───────── */
-.app-header-logo {
-  color: var(--fgColor-onEmphasis, #ffffff) !important;
-  display: inline-flex;
+/* ───────── App header ───────── */
+.app-header {
+  display: flex;
   align-items: center;
+  padding: 8px 16px;
+  background: var(--bgColor-default);
+  border-bottom: 1px solid var(--borderColor-default);
 }
 
-.app-header-title {
-  font-size: 16px !important;
-  font-weight: 600 !important;
-  color: var(--fgColor-onEmphasis, #ffffff) !important;
-  white-space: nowrap;
+.app-header-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--fgColor-default);
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;
+}
+
+.app-header-brand:hover {
+  color: var(--fgColor-muted);
 }
 
 /* ───────── UnderlineNav container (repo-tab bar) ───────── */
 .underline-nav-container {
-  border-bottom: 1px solid var(--borderColor-default, #d1d9e0);
-  background: var(--bgColor-default, #fff);
+  border-bottom: 1px solid var(--borderColor-default);
+  background: var(--bgColor-default);
 }
 
 .underline-nav-container nav {
