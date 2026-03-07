@@ -176,7 +176,7 @@ export function AssessPage(): React.ReactElement {
             </Heading>
             <Button
               as="a"
-              href="https://localhost:7000/report"
+              href="http://localhost:4000/grafana/d/Jaaimc67k/engineering-throughput-and-cycle-time?orgId=1&from=now-6M&to=now&timezone=utc&var-project=$__all&var-priority=$__all&var-interval=DAYOFMONTH"
               target="_blank"
               rel="noopener noreferrer"
               size="small"
