@@ -9,7 +9,7 @@ from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.text import Text
 
-from stem.session import load_agent_message, run_agent
+from stem.engine import run_assessment
 
 console = Console()
 
@@ -54,23 +54,13 @@ def assess(
         from stem.cli import get_workspace
 
         ws = get_workspace()
-        system_message = load_agent_message(ws.root, "assessor")
-
-        prompt = (
-            f"Assess the GitHub repository **{repo}**. "
-            "Use the available Microsoft Docs, WorkIQ and GitHub "
-            "tools to inspect the repo contents, workflows, "
-            "configuration files, and community health files. "
-            "Then produce the full SDLC assessment report."
-        )
 
         report = asyncio.run(
-            run_agent(
-                prompt=prompt,
-                system_message=system_message,
+            run_assessment(
+                repo=repo,
+                ws=ws,
                 model=model,
                 timeout=timeout,
-                ws=ws,
             )
         )
     except Exception as exc:

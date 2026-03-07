@@ -1,0 +1,349 @@
+/* ───────── Reset & base ───────── */
+:root {
+  color-scheme: light dark;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
+    Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  background: var(--bgColor-default, #fff);
+  color: var(--fgColor-default, #1f2328);
+}
+
+/* ───────── App layout ───────── */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-container {
+  max-width: 1012px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  width: 100%;
+}
+
+/* ───────── Header brand ───────── */
+.app-header-logo {
+  color: var(--fgColor-onEmphasis, #ffffff) !important;
+  display: inline-flex;
+  align-items: center;
+}
+
+.app-header-title {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: var(--fgColor-onEmphasis, #ffffff) !important;
+  white-space: nowrap;
+}
+
+/* ───────── UnderlineNav container (repo-tab bar) ───────── */
+.underline-nav-container {
+  border-bottom: 1px solid var(--borderColor-default, #d1d9e0);
+  background: var(--bgColor-default, #fff);
+}
+
+.underline-nav-container nav {
+  max-width: 1012px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* ───────── Page header section ───────── */
+.page-header-section {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--borderColor-default, #d1d9e0);
+}
+
+.page-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.page-description {
+  color: var(--fgColor-muted, #656d76);
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+/* ───────── GitHub-style box (bordered card) ───────── */
+.gh-box {
+  border: 1px solid var(--borderColor-default, #d1d9e0);
+  border-radius: 6px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.gh-box-header {
+  padding: 12px 16px;
+  background: var(--bgColor-muted, #f6f8fa);
+  border-bottom: 1px solid var(--borderColor-default, #d1d9e0);
+}
+
+.gh-box-title {
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gh-box-title-with-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gh-box-body {
+  padding: 16px;
+}
+
+.gh-box-body--log {
+  padding: 16px;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+/* ───────── Assess form ───────── */
+.assess-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.assess-form__input {
+  flex: 1;
+}
+
+.flash-message {
+  margin-bottom: 16px;
+}
+
+/* ───────── Event log ───────── */
+.event-log {
+  /* no extra chrome – the gh-box wraps it */
+}
+
+.event-waiting {
+  color: var(--fgColor-muted, #656d76);
+  font-style: italic;
+}
+
+.event-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.event-label {
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.event-tool-name {
+  font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, monospace;
+  font-weight: 600;
+  color: var(--fgColor-accent, #0969da);
+}
+
+.event-detail {
+  color: var(--fgColor-muted, #656d76);
+  font-size: 12px;
+}
+
+.event-reasoning {
+  color: var(--fgColor-muted, #656d76);
+  font-style: italic;
+}
+
+.event-error {
+  color: var(--fgColor-danger, #d1242f);
+}
+
+.event-badge-danger {
+  background-color: var(--bgColor-danger-emphasis, #cf222e) !important;
+}
+
+/* ───────── Blankslate (empty state) ───────── */
+.blankslate {
+  border: 1px solid var(--borderColor-default, #d1d9e0);
+  border-radius: 6px;
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.blankslate-icon {
+  color: var(--fgColor-muted, #656d76);
+  margin-bottom: 16px;
+}
+
+.blankslate-heading {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.blankslate-description {
+  color: var(--fgColor-muted, #656d76);
+  max-width: 460px;
+  margin: 0 auto 16px;
+  font-size: 14px;
+}
+
+.blankslate-action {
+  margin-top: 16px;
+}
+
+/* ───────── GitHub-flavored markdown body ───────── */
+.markdown-body {
+  font-size: 14px;
+  line-height: 1.6;
+  word-wrap: break-word;
+  color: var(--fgColor-default, #1f2328);
+}
+
+.markdown-body h1 {
+  padding-bottom: 0.3em;
+  font-size: 2em;
+  border-bottom: 1px solid var(--borderColor-default, #d1d9e0);
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.markdown-body h2 {
+  padding-bottom: 0.3em;
+  font-size: 1.5em;
+  border-bottom: 1px solid var(--borderColor-default, #d1d9e0);
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.markdown-body h3 {
+  font-size: 1.25em;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.markdown-body h4 {
+  font-size: 1em;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.markdown-body p {
+  margin-bottom: 16px;
+}
+
+.markdown-body a {
+  color: var(--fgColor-accent, #0969da);
+  text-decoration: none;
+}
+
+.markdown-body a:hover {
+  text-decoration: underline;
+}
+
+.markdown-body code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background: var(--bgColor-neutral-muted, rgba(175, 184, 193, 0.2));
+  border-radius: 6px;
+  font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, monospace;
+}
+
+.markdown-body pre {
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background: var(--bgColor-muted, #f6f8fa);
+  border-radius: 6px;
+  margin-bottom: 16px;
+  border: 1px solid var(--borderColor-default, #d1d9e0);
+}
+
+.markdown-body pre code {
+  display: inline;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  line-height: inherit;
+  background: transparent;
+  border: 0;
+  font-size: 100%;
+}
+
+.markdown-body blockquote {
+  padding: 0 1em;
+  color: var(--fgColor-muted, #656d76);
+  border-left: 0.25em solid var(--borderColor-default, #d1d9e0);
+  margin-bottom: 16px;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 2em;
+  margin-bottom: 16px;
+}
+
+.markdown-body li {
+  margin-top: 0.25em;
+}
+
+.markdown-body table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  width: 100%;
+  overflow: auto;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+  padding: 6px 13px;
+  border: 1px solid var(--borderColor-default, #d1d9e0);
+}
+
+.markdown-body table th {
+  font-weight: 600;
+  background: var(--bgColor-muted, #f6f8fa);
+}
+
+.markdown-body table tr:nth-child(2n) {
+  background: var(--bgColor-muted, #f6f8fa);
+}
+
+.markdown-body strong {
+  font-weight: 600;
+}
+
+.markdown-body hr {
+  height: 0.25em;
+  padding: 0;
+  margin: 24px 0;
+  background-color: var(--borderColor-default, #d1d9e0);
+  border: 0;
+}

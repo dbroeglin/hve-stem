@@ -25,6 +25,7 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/stem"]
+artifacts = ["src/stem/data/static/**"]
 
 [dependency-groups]
 dev = ["mypy", "pytest", "ruff", "types-pyyaml"]

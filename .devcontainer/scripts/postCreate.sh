@@ -7,7 +7,7 @@ export UV_LINK_MODE="${UV_LINK_MODE:-copy}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WORKSPACE_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
 VENV_PATH="$WORKSPACE_DIR/.venv"
-PYTHON_VERSION="3.12.12"
+PYTHON_VERSION="3.12"
 
 # Always ensure the required managed Python is installed (survives container rebuilds)
 uv python install "$PYTHON_VERSION"
@@ -33,3 +33,5 @@ uv sync --group dev
 if ! grep -q "source $VENV_PATH/bin/activate" /root/.bashrc; then
 	printf '\nsource %s/bin/activate\n' "$VENV_PATH" >> /root/.bashrc
 fi
+
+npm install -g @playwright/cli@latest

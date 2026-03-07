@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import yaml
+
 
 @dataclass(frozen=True)
 class Skill:
@@ -32,6 +34,7 @@ class Workspace:
     root: Path
     skills: list[Skill] = field(default_factory=list)
     agents: list[Agent] = field(default_factory=list)
+    targets: list[str] = field(default_factory=list)
 
 
 def _parse_skill(skill_dir: Path) -> Skill | None:
@@ -169,4 +172,26 @@ def load_workspace(root: Path) -> Workspace:
                     if agent is not None:
                         agents.append(agent)
 
-    return Workspace(root=root, skills=skills, agents=agents)
+    return Workspace(
+        root=root, skills=skills, agents=agents, targets=_load_targets(root)
+    )
+
+
+def _load_targets(root: Path) -> list[str]:
+    """Read target repos from ``stem.yaml`` in *root*."""
+    stem_yaml = root / "stem.yaml"
+    if not stem_yaml.is_file():
+        return []
+    data = yaml.safe_load(stem_yaml.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        return []
+    raw_targets = data.get("targets", [])
+    if not isinstance(raw_targets, list):
+        return []
+    repos: list[str] = []
+    for entry in raw_targets:
+        if isinstance(entry, dict) and isinstance(entry.get("repo"), str):
+            repos.append(entry["repo"])
+        elif isinstance(entry, str):
+            repos.append(entry)
+    return repos

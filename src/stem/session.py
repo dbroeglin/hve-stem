@@ -217,6 +217,7 @@ async def run_agent(
     timeout: float,
     ws: Workspace,
     output: Console | None = None,
+    on_event: Callable[..., None] | None = None,
 ) -> str:
     """Create a Copilot session and send a prompt.
 
@@ -232,21 +233,44 @@ async def run_agent(
         output: Console to write progress messages to. Defaults to stdout.
             Pass ``Console(stderr=True)`` when calling from an MCP tool handler
             to keep stdout free for the JSON-RPC protocol stream.
+        on_event: Optional callback receiving structured ``AssessEvent`` objects
+            for each progress event (tool calls, reasoning, permissions).
 
     Returns:
         The model's response text.
     """
+    from stem.engine import AssessEvent
+
     _console = output if output is not None else Console()
+    _emit = on_event or (lambda _e: None)
+
     client = CopilotClient()
     await client.start()
 
     try:
         stem_dir = str(ws.root / "stem")
         mcp_servers = load_mcp_servers(ws.root)
+
+        def _permission_handler(
+            request: PermissionRequest, invocation: dict[str, str]
+        ) -> PermissionRequestResult:
+            # Emit structured event
+            kind_str: str = request.get("kind") or "unknown"
+            cmd = invocation.get("command") or invocation.get("cmd") or ""
+            tool_name = invocation.get("tool_name") or invocation.get("name") or ""
+            detail = cmd[:120] if cmd else tool_name
+            _emit(AssessEvent(type="permission", kind=kind_str, detail=detail))
+
+            # Also print to console for CLI
+            if request.get("kind") != "mcp":
+                _console.print(_format_permission_line(request, invocation))
+
+            return PermissionRequestResult(kind="approved")
+
         session = await client.create_session(
             {
                 "model": model,
-                "on_permission_request": _make_permission_handler(_console),
+                "on_permission_request": _permission_handler,
                 "mcp_servers": mcp_servers,
                 "system_message": SystemMessageReplaceConfig(
                     mode="replace", content=system_message
@@ -260,8 +284,29 @@ async def run_agent(
             if event.type == SessionEventType.ASSISTANT_REASONING:
                 text = (event.data.content or "").strip()
                 if text:
+                    _emit(AssessEvent(type="reasoning", message=text))
                     _console.print(f"  [dim italic]💭 {text}[/dim italic]")
             elif event.type == SessionEventType.TOOL_EXECUTION_START:
+                data = event.data
+                tool_name = data.tool_name or "unknown"
+                mcp_server = data.mcp_server_name
+                mcp_tool = data.mcp_tool_name
+                display = (
+                    f"{mcp_server}/{mcp_tool}" if mcp_server and mcp_tool else tool_name
+                )
+                args = data.arguments or {}
+                detail = ""
+                if isinstance(args, dict):
+                    cmd = args.get("command") or args.get("cmd") or ""
+                    if cmd:
+                        detail = str(cmd).strip().replace("\n", "; ")[:120]
+                    else:
+                        for key in ("owner", "path", "query", "url", "name", "repo"):
+                            val = args.get(key)
+                            if val and isinstance(val, str):
+                                detail = val[:80]
+                                break
+                _emit(AssessEvent(type="tool", tool=display, detail=detail))
                 _console.print(_format_tool_line(event))
 
         session.on(_on_event)
