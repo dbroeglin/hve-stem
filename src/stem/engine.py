@@ -35,6 +35,7 @@ class AssessEvent:
 
 EventCallback = Callable[[AssessEvent], None]
 
+
 def save_report(workspace_root: Path, repo: str, report: str) -> Path:
     """Persist an assessment report to the stem instance repository.
 
