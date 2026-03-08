@@ -4,25 +4,29 @@
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![CI](https://img.shields.io/github/actions/workflow/status/dbroeglin/hve-stem/ci.yml?label=CI)
 
-> **Control plane for agentic software development.**
+**Stem is a control plane for agentic software development** — the missing governance layer for enterprises adopting AI agents across their SDLC. As teams roll out Copilot, AI-powered code reviews, and agentic CI/CD, there is no framework to measure whether it's working, enforce standards, or improve systematically. Stem fills that gap.
 
-Stem sits above your agentic workflows and developer tools, providing a single
-control plane to **bootstrap, assess, govern, and continuously improve** how your
-team's agentic SDLC operates — across one or many repositories.
+Built on the GitHub Copilot SDK, Stem creates agentic sessions equipped with MCP tools to autonomously assess repositories against a novel five-dimension maturity model extending DORA, SPACE, and DevEx into agentic territory — a dimension no existing framework covers. Findings automatically become GitHub issues with context specific remediation guidance, closing the feedback loop.
+
+Stem integrates GitHub MCP, GitHub API, DevLake for DORA metrics, and Work IQ for team-level signals. It exposes three parity surfaces — CLI, MCP server, and React web dashboard — with Git-native state, zero-database architecture, and full auditability. **One engine. Every surface. Org-scale governance**.
 
 ---
 
 ## Problem
 
-Teams adopting agentic development (AI-assisted code review, automated issue
-triage, agentic CI/CD) face fragmentation: capabilities are scattered across
-tools, there is no unified view of maturity or health, and no systematic way to
-enforce policies or improve over time.
+Every enterprise is rolling out AI Coding agents across their SDLC.
+
+Nobody can answer: **is it actually working?** No maturity model. No compliance framework. No feedback loop.
+
+Agents ship into the void — **unmeasured, ungoverned, unimproved**.
 
 ## Solution
 
-Stem answers: *"How mature is our agentic SDLC, what should we improve next,
-and how do we enforce our standards?"*
+Stem is the DORA for agentic development.
+
+A Copilot SDK-powered control plane that autonomously assesses repos against an agentic maturity model — then auto-generates remediation issues to close the loop.
+
+CLI | MCP server | Web dashboard — one engine, three surfaces.
 
 | Concern                    | What Stem provides                                                                              |
 |----------------------------|-------------------------------------------------------------------------------------------------|
@@ -32,7 +36,9 @@ and how do we enforce our standards?"*
 | **Observability**          | Surface how the agentic SDLC is performing (quality signals, pipeline health, policy compliance) |
 | **Continuous improvement** | Learn from assessment outcomes and iteratively refine agent configurations and workflows         |
 
----
+## Screenshots
+
+![Screenshot of the Stem web dashboard showing an assessment report with markdown content, a table of checks](docs/assets/screenshot_assessment_report.png)
 
 ## Architecture
 
