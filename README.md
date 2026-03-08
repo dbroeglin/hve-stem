@@ -7,7 +7,7 @@
 > **Control plane for agentic software development.**
 
 Stem sits above your agentic workflows and developer tools, providing a single
-surface to **bootstrap, govern, assess, and continuously improve** how your
+control plane to **bootstrap, assess, govern, and continuously improve** how your
 team's agentic SDLC operates — across one or many repositories.
 
 ---
